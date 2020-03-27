@@ -1,1 +1,4 @@
 __pycache__
+/onlyuserclient.egg-info
+/dist
+/build
