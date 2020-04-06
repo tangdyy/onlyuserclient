@@ -108,7 +108,6 @@ class RoleModelViewSet(viewsets.ModelViewSet):
                 if scope in serializer_classs:
                     serializer_class = serializer_classs[scope]
                     break
-        print(serializer_class)
         if serializer_class is None:
             serializer_class = serializer_classs.get('default')
         return serializer_class

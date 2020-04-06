@@ -3,4 +3,4 @@
 
 __version__='1.0.1'
 
-VSERSION = __version__
+VERSION = __version__
