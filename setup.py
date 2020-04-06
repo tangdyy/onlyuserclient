@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'onlyuserclient',
-    version = '1.0.0',
+    version = '1.0.1',
     description = 'onlyuser client',
     author = 'Tang dayong',    
     requires=['django', 'djangorestframework'],
