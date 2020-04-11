@@ -29,6 +29,17 @@ class OnlyuserApi( BaseAPI):
             api_root_url or settings.ONLYUSER_API_URL,
             timeout or settings.API_TIMEOUT 
         )
+        self._apikey_header = settings.ONLYUSER_APIKEY_HEADER or 'apikey'
+        self._apikey = settings.ONLYUSER_APIKEY or None
+
+    def get_default_headers(self, headers={}):
+        '''返默认http头部
+        '''
+        default = {'Connection': 'close'}
+        if not self._apikey is None:
+            default[self._apikey_header] = self._apikey
+        return dict(default, **headers)
+        
 
     def register_resource(self):
         '''注册API资源
@@ -46,7 +57,8 @@ class OnlyuserApi( BaseAPI):
             'user_id': user_id,
             'organization_id': organization_id
         }
-        return self._request('roleperm', 'userids_department', body=data, headers={'Connection': 'close'})
+        
+        return self._request('roleperm', 'userids_department', body=data, headers=headers)
 
 
     def query_userids_branch(self, app_tag, user_id, organization_id):
@@ -60,10 +72,11 @@ class OnlyuserApi( BaseAPI):
             'user_id': user_id,
             'organization_id': organization_id
         }
-        return self._request('roleperm', 'userids_branch', body=data)
+        headers = self.get_default_headers()
+        return self._request('roleperm', 'userids_branch', body=data, headers=headers)
     
 
-    def query_userids_organization(self, app_tag, user_id, organization_id, headers={'Connection': 'close'}):
+    def query_userids_organization(self, app_tag, user_id, organization_id):
         '''查询用户所在机构(公司)的全部用户ID列表
            @app_tag           应用标签
            @user_id           用户ID
@@ -74,7 +87,8 @@ class OnlyuserApi( BaseAPI):
             'user_id': user_id,
             'organization_id': organization_id
         }
-        return self._request('roleperm', 'userids_organization', body=data, headers={'Connection': 'close'})    
+        headers = self.get_default_headers()
+        return self._request('roleperm', 'userids_organization', body=data, headers=headers)    
 
 #默认接口实例
 onlyuserapi = OnlyuserApi()
