@@ -33,6 +33,15 @@ python setup.py install
   ```python
   API_TIMEOUT = 5
   ```
+  * onlyuser接口key-auth的KEY值,如是None表示不需要认证,默认是None
+  ```python
+  ONLYUSER_APIKEY='lLl8Mo1EE0Ydx7TyNkqRHllRosqdpDd0'
+  ```
+  * onlyuser接口携带key-auth KEY的http header名称
+  ```python
+  ONLYUSER_APIKEY_HEADER = 'apikey'
+  ```
+  
 
 第二步确定要控制字段显示和字段修改权限的场景,并分别定义多个序列化类,每个场景对应一个序列化类,并定义一个标签。例如:    
 序列化类有三个字段`name`,`mobile`,`address`。第一种情况允许用户修改所有字段并完整显示全部字段, 用标签`all`代表；第二种情况用户不能修改`mobile`字段,并且隐藏`mobile`字段中间4位,用`*`号代替, 用标签`part`代表；第三种情况全部字段都只能查看不能修改,并且隐藏`address`字段, 用`*`号代替, 用标签`readonly`代表；定义三个序列化类
