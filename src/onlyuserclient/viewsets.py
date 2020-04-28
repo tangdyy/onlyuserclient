@@ -8,6 +8,7 @@ class RoleModelViewSet(viewsets.ModelViewSet):
        使用时必须定义子类,并定义以下属性:
           queryset: Model类的QuerySet实例
           user_relate_field: Model类中保存user_id的字段名
+          organization_relate_field: Model类中保存organization_id的字段名
           serializer_classs: 字段权限对应的序列化类,dict结构, key是代表字段权限scope标签, value是序列化类
        以下属性可以选择定义:
           allow_not_auth: 是否允许未认证的用户访问,默认是`False`,如果是`True`,未认证用户访问不受限制
@@ -64,7 +65,12 @@ class RoleModelViewSet(viewsets.ModelViewSet):
         else:
             if ids is None:
                 ids =[]
-            qset=eval("qset.filter(%s__in=ids)"%(relate_field,),globals(),locals())            
+            org_relate_field = getattr('organization_relate_field', None)
+            if org_relate_field:
+                codestr = "qset.filter(%s=organization_id, %s__in=ids)"%(org_relate_field,relate_field,) 
+            else:
+                codestr = "qset.filter(%s__in=ids)"%(relate_field,)
+            qset=eval(codestr,globals(),locals())            
         return qset
 
 
@@ -111,4 +117,5 @@ class RoleModelViewSet(viewsets.ModelViewSet):
         if serializer_class is None:
             serializer_class = serializer_classs.get('default')
         return serializer_class
+
         
