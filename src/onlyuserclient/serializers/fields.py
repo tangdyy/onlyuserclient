@@ -1,5 +1,7 @@
 from rest_framework.serializers import CharField
 
+__all__ = ("HideCharField",)
+
 class HideCharField(CharField):
     '''可以部分隐藏的字符串字段
        初如化参数除了标准字符串字段的参数外,有以下专用参数:

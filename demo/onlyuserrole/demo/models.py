@@ -8,3 +8,4 @@ class RoleDemo(models.Model):
     address = models.CharField('地址',max_length=100)
     idcord = models.EmailField('身份证号码',max_length=18)
     owner = models.CharField('拥有我', max_length=24)
+    organization = models.CharField('拥有我', max_length=24, blank=True)

@@ -30,3 +30,10 @@ class HideDemoSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ReadlyMobileDemoSerializer(serializers.ModelSerializer):
+    '''此序列化类,所有字段都能完全显和修改
+    '''
+    class Meta:
+        model = RoleDemo
+        fields = "__all__"
+        read_only_fields=('mobile',)

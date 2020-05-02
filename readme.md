@@ -78,6 +78,10 @@ class ReadonlyDemoSerializer(serializers.ModelSerializer):
 + `branch` 可以访问本部门及下属机构全部用户的记录
 + `organization` 可以操作所在组织整个组织机构树下全部用户的记录
 
+视图类除了`ModelViewSet`的标准属性外，需要定义以下属性：  
++ `queryset` 必须定义，是QuerySet对象
++ `user_relate_field` 必须定义，`Model`中关联`User`的字段名
++ ``
 ```python
 from onlyuserclient.viewsets import RoleModelViewSet
 from .serializers import DefaultDemoSerializer, CompleteDemoSerializer, HideDemoSerializer

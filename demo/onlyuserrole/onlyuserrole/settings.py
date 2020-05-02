@@ -131,5 +131,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-ONLYUSER_API_URL = 'http://127.0.0.1:8000'
-API_TIMEOUT = 5
+ONLYUSERCLIENT ={
+    'API_ROOT_URL': 'https://test.cdqidian.net/onlyuser',
+    'API_TIMEOUT': 30,
+    'APIKEY_HEADER': 'apikey',
+    'APIKEY': 'BJgCJlsZmr3qK5eVisoK0Jw6gQKrzPAa',    
+}
