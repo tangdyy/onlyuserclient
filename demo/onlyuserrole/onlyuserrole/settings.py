@@ -143,6 +143,6 @@ ONLYUSERCLIENT ={
     'API_TIMEOUT': 30,
     'APIKEY_HEADER': 'apikey',
     'APIKEY': 'BJgCJlsZmr3qK5eVisoK0Jw6gQKrzPAa',    
-    'CACHE_API': False,
-    'CACHE_TTL': 60,    
+    'CACHE_API': True,
+    'CACHE_TTL': 10,    
 }
