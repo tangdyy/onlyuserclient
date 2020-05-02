@@ -34,3 +34,4 @@ class HideCharField(CharField):
         return data[:self._hide_start] + self._fill_char*hide_len + data[self._hide_start+hide_len:]
         
 
+

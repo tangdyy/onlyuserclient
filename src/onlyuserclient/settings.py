@@ -11,7 +11,8 @@ default_settings = {
     'API_HEADERS': {},
     'APIKEY_HEADER': 'apikey',
     'APIKEY': None,
-
+    'CACHE_API': False,
+    'CACHE_TTL': 60,
 } 
 
 api_settings = APISettings(user_settings,default_settings,None)

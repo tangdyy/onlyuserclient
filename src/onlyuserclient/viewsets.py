@@ -1,7 +1,8 @@
 from django.db import models
+from django.core.cache import cache
 from rest_framework import exceptions,status,viewsets
 from onlyuserclient.api import onlyuserapi
-
+from onlyuserclient.settings import api_settings
 
 class RoleModelViewSet(viewsets.ModelViewSet):
     '''角色权限视图集
@@ -93,6 +94,14 @@ class RoleModelViewSet(viewsets.ModelViewSet):
         if max_scope == 'owner':
             return [user_id,]
 
+        ids = None
+        cache_key = application_id + user_id + organization_id + max_scope
+        if api_settings.CACHE_API:
+            ids = cache.get(cache_key)
+
+        if ids:
+            return ids
+
         data = {
         	"app_id":application_id,
         	"user_id":user_id,
@@ -108,10 +117,14 @@ class RoleModelViewSet(viewsets.ModelViewSet):
                 res = onlyuserapi.roleperms.userids_department(body=data)
         except:
             pass
+
         ids = []
         if res and res.status_code==200:
-            ids = res.body 
-        print(ids)      
+            if isinstance(res.body,list):
+                ids=res.body
+                if api_settings.CACHE_API:
+                    cache.set(cache_key, ids, api_settings.CACHE_TTL)
+   
         return ids
 
     def get_serializer_class(self):
