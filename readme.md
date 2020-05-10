@@ -134,13 +134,13 @@ class RoleViewSet(RoleModelViewSet):
   主键远程关联字段，本地保存的字段值是远程资源的主键，有以下属性：
   + `resource`   
     远程资源名
-  + `action`
+  + `action`    
     查询资源对象的方法，默认就`retrieve`。
-  + `fields`
+  + `fields`    
     序列化的资源字段列表
-  + `remote_api`
+  + `remote_api`    
     一个`simple_rest_client.api.API`对象，访问远程资源，只能在子类中定义，默认是`onlyuserapi`。
-+ `UserRelatedField`
++ `UserRelatedField`    
   onlyuser的`User`关联字段
-+ `OrganizationRelatedField`
++ `OrganizationRelatedField`    
   onlyuser的`Organization`关联字段
