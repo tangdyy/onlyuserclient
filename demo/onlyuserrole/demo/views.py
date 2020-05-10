@@ -5,7 +5,7 @@ from .models import RoleDemo
 class RoleViewSet(RoleModelViewSet):
     queryset = RoleDemo.objects.all()
     user_relate_field = 'owner'
-    organization_relate_field = 'organization'
+    org_relate_field = 'organization'
     serializer_classs = {
         'default': DefaultDemoSerializer,
         'complete_view': CompleteDemoSerializer,

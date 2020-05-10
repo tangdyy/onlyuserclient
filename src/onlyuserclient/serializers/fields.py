@@ -3,7 +3,7 @@ from rest_framework.serializers import CharField, Field, ValidationError
 from onlyuserclient.api import onlyuserapi
 from onlyuserclient.settings import api_settings
 
-__all__ = ("HideCharField", "RemotePkRelatedField")
+__all__ = ("HideCharField", "RemotePkRelatedField", "UserRelatedField", "OrganizationRelatedField")
 
 class HideCharField(CharField):
     '''可以部分隐藏的字符串字段
@@ -87,3 +87,17 @@ class RemotePkRelatedField(Field):
         if obj is None:
             raise ValidationError("ID:%s is not a valid object for resource '%s'."%(value, self._resource)) 
         return data
+
+class UserRelatedField(Field):
+    '''用户对象关联字段
+    '''
+    def __init__(self, *args, fields=['username', 'nickname'], **kwargs):
+        super().__init__(*args, resource='users', action='retrieve', fields=fields, **kwargs)
+
+class OrganizationRelatedField(Field):
+    '''组织机构对象关联字段
+    '''
+    def __init__(self, *args, fields=['name'], **kwargs):
+        super().__init__(*args, resource='organizations', action='retrieve', fields=fields, **kwargs)
+
+       
