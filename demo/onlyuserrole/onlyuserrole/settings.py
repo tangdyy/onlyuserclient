@@ -115,9 +115,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-Hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -131,5 +131,18 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-ONLYUSER_API_URL = 'http://127.0.0.1:8000'
-API_TIMEOUT = 5
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'onlyuserrole_cache',
+    }
+}
+
+ONLYUSERCLIENT ={
+    'API_ROOT_URL': 'https://test.cdqidian.net/onlyuser',
+    'API_TIMEOUT': 30,
+    'APIKEY_HEADER': 'apikey',
+    'APIKEY': 'BJgCJlsZmr3qK5eVisoK0Jw6gQKrzPAa',    
+    'CACHE_API': True,
+    'CACHE_TTL': 10,    
+}

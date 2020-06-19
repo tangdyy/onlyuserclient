@@ -1,7 +1,8 @@
 from django.db import models
+from django.core.cache import cache
 from rest_framework import exceptions,status,viewsets
-from onlyuserclient.apis.onlyuser import onlyuserapi
-
+from onlyuserclient.api import onlyuserapi
+from onlyuserclient.settings import api_settings
 
 class RoleModelViewSet(viewsets.ModelViewSet):
     '''角色权限视图集
@@ -11,6 +12,7 @@ class RoleModelViewSet(viewsets.ModelViewSet):
           serializer_classs: 字段权限对应的序列化类,dict结构, key是代表字段权限scope标签, value是序列化类
        以下属性可以选择定义:
           allow_not_auth: 是否允许未认证的用户访问,默认是`False`,如果是`True`,未认证用户访问不受限制
+          org_relate_field: Model类中保存organization_id的字段名
 
        用scope标签标记角色的记录权限范围,默认实现了按组织机构定义的scope如下：
            'all':          可以操作全部记录
@@ -34,29 +36,28 @@ class RoleModelViewSet(viewsets.ModelViewSet):
             raise AttributeError("Attribute 'queryset' must be defined.")
         if not isinstance(qset, models.QuerySet):
             raise AttributeError("Attribute 'queryset' must be an instance of 'QuerySet'.")
+        allow_not_auth = getattr(self, 'allow_not_auth', True)
+
+        role = getattr(self.request, 'role', None)
+        if allow_not_auth and role is None: 
+            return qset
+
+        if not allow_not_auth and role is None: 
+            return qset.none()
+
         relate_field = getattr(self,'user_relate_field')
         if relate_field is None:
             raise AttributeError("Attribute 'user_relate_field' must be defined.")
 
-        allow_not_auth = getattr(self, 'allow_not_auth', False)
-        role = getattr(self.request, 'role', None)
-        scopes = None
-        if allow_not_auth and role :
-            scopes = role.get('scopes', None)
-        elif role is None or not 'scopes' in role:
-            raise exceptions.NotAuthenticated()
-        else:
-            scopes = role['scopes']
-        
-        if allow_not_auth and scopes is None:
-            return qset
+        scopes = role.get('scopes',[])
         
         is_admin = role.get('is_admin')
         if is_admin:
             return qset
-        application_id = role.get('application_id')
-        user_id = role.get('user_id')
-        organization_id = role.get('current_org')
+
+        application_id = role.get('application_id', None)
+        user_id = role.get('user_id', None)
+        organization_id = role.get('current_org', None)
         ids = self.get_ids_from_scopes(scopes, application_id, user_id, organization_id)
 
         if ids == 'all':
@@ -64,7 +65,12 @@ class RoleModelViewSet(viewsets.ModelViewSet):
         else:
             if ids is None:
                 ids =[]
-            qset=eval("qset.filter(%s__in=ids)"%(relate_field,),globals(),locals())            
+            org_relate_field = getattr(self,'org_relate_field', None)
+            if org_relate_field:
+                codestr = "qset.filter(%s=organization_id, %s__in=ids)"%(org_relate_field, relate_field,) 
+            else:
+                codestr = "qset.filter(%s__in=ids)"%(relate_field,)
+            qset=eval(codestr, globals(), locals())            
         return qset
 
 
@@ -82,17 +88,44 @@ class RoleModelViewSet(viewsets.ModelViewSet):
                 max_scope = v
                 max_scope_level = level
 
-        if max_scope == 'all':
+        if  max_scope == 'all':
             return 'all'
-        elif max_scope == 'organization':
-            return onlyuserapi.query_userids_organization(application_id, user_id, organization_id)
-        elif max_scope == 'branch':
-            return onlyuserapi.query_userids_branch(application_id, user_id, organization_id)
-        elif max_scope == 'department':
-             return onlyuserapi.query_userids_department(application_id, user_id, organization_id)
-        elif max_scope == 'owner':
-            return [user_id]
-        return []
+
+        if max_scope == 'owner':
+            return [user_id,]
+
+        ids = None
+        cache_key = application_id + user_id + organization_id + max_scope
+        if api_settings.CACHE_API:
+            ids = cache.get(cache_key)
+
+        if ids:
+            return ids
+
+        data = {
+        	"app_id":application_id,
+        	"user_id":user_id,
+        	"organization_id":organization_id
+        }
+        res = None
+        try:
+            if max_scope == 'organization':
+                res = onlyuserapi.roleperms.userids_organization(body=data)
+            elif max_scope == 'branch':
+                res = onlyuserapi.roleperms.userids_branch(body=data)
+            elif max_scope == 'department':
+                res = onlyuserapi.roleperms.userids_department(body=data)
+        except:
+            pass
+
+        ids = []
+        if res and res.status_code==200:
+            if isinstance(res.body,list):
+                ids=res.body
+                if api_settings.CACHE_API:
+                    cache.set(cache_key, ids, api_settings.CACHE_TTL)
+   
+        return ids
 
     def get_serializer_class(self):
         '''根据字段权限标签切换序列化类
@@ -108,8 +141,8 @@ class RoleModelViewSet(viewsets.ModelViewSet):
                 if scope in serializer_classs:
                     serializer_class = serializer_classs[scope]
                     break
-        print(serializer_class)
         if serializer_class is None:
             serializer_class = serializer_classs.get('default')
         return serializer_class
+
         

@@ -11,12 +11,12 @@ class RoleMiddleware():
         role = None
         if 'X-User-Id' in request.headers:
             role = {}
-            role['application_id'] = request.headers.get('X-Application-Id') 
+            role['application_id'] = request.headers.get('X-Application-Id', None) 
             role['is_admin'] = request.headers.get('X-User-Is-Admin', 'FALSE') == 'TRUE'
-            role['user_id'] = request.headers.get('X-User-Id')
-            role['username'] = request.headers.get('X-User-Username')
+            role['user_id'] = request.headers.get('X-User-Id', None)
+            role['username'] = request.headers.get('X-User-Username', None)
             role['current_org'] = request.headers.get('X-Current-Org', None)
-            scopesstr = request.headers.get('X-Roleperm-Scopes')
+            scopesstr = request.headers.get('X-Roleperm-Scopes', None)
             if isinstance(scopesstr,str) and len(scopesstr)>0:
                 role['scopes'] = scopesstr.split(',')
             else:
