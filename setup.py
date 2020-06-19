@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'onlyuserclient',
-    version = '1.0.4',
+    version = '1.0.5',
     description = 'onlyuser client',
     author = 'Tang dayong',    
     requires=['django', 'djangorestframework'],
