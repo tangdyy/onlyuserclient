@@ -1,6 +1,6 @@
-'''onlyuser 客户端工具包
+'''onlyuser 客户端开发包
 '''
 
-__version__='1.0.5'
+__version__='1.0.6'
 
 VERSION = __version__
