@@ -144,5 +144,5 @@ class RoleViewSet(RoleModelViewSet):
   onlyuser的`User`关联字段
 + `OrganizationRelatedField`    
   onlyuser的`Organization`关联字段
-+ `SummaryRelatedField`
++ `SummaryRelatedField`      
   关联字段摘要信息字段
