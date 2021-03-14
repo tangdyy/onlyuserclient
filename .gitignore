@@ -1,4 +1,4 @@
 __pycache__
 /dist
 /build
-onlyuserclient.egg-info
+/src/onlyuserclient.egg-info
