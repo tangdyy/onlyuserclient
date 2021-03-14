@@ -1,5 +1,6 @@
 from django.core.cache import cache
-from rest_framework.serializers import CharField, Field, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.serializers import CharField, Field, RelatedField, ValidationError
 from onlyuserclient.api import onlyuserapi
 from onlyuserclient.settings import api_settings
 
@@ -68,7 +69,8 @@ class RemotePkRelatedField(Field):
             raise ValidationError('Failed to access API interface.')
 
         if response is None or response.status_code != 200:
-            raise ValidationError("ID:%s is not a valid object for resource '%s'."%(value, self._resource))  
+            return None
+            #raise ValidationError("ID:%s is not a valid object for resource '%s'."%(value, self._resource))  
 
         if api_settings.CACHE_API and  response.body:
             cache.set(cache_key, response.body, api_settings.CACHE_TTL)
@@ -85,7 +87,8 @@ class RemotePkRelatedField(Field):
     def to_internal_value(self, data):
         obj = self.get_remote_object(data)
         if obj is None:
-            raise ValidationError("ID:%s is not a valid object for resource '%s'."%(value, self._resource)) 
+            return None
+            #raise ValidationError("ID:%s is not a valid object for resource '%s'."%(value, self._resource)) 
         return data
 
 class UserRelatedField(Field):
@@ -101,3 +104,25 @@ class OrganizationRelatedField(Field):
         super().__init__(*args, resource='organizations', action='retrieve', fields=fields, **kwargs)
 
        
+class SummaryRelatedField(RelatedField):
+    """
+    显示摘要信息, 可读写, 通过ID字段关联到目标, 参数fields指示返回的字段
+    """
+
+    def __init__(self, fields=None, **kwargs):
+        self.fields = fields or []
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().get(id=data)
+        except ObjectDoesNotExist:
+            self.fail('does_not_exist', value=data)
+        except (TypeError, ValueError):
+            self.fail('invalid')
+
+    def to_representation(self, obj):
+        result = {'id':obj.id}
+        for field in self.fields:
+            result[field] = getattr(obj, field)
+        return result
