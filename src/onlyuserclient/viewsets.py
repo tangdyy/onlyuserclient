@@ -148,7 +148,7 @@ class RoleModelViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         if hasattr(self, 'creater'):  
-            creater = request.role.get('user_id', '0') if hasattr(request, 'role') else '0'
+            creater = request.role.get('user_id', '0') if hasattr(request, 'role') and request.role else '0'
             create_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
             if self.creater == True:
                 request.data['creater'] = creater
@@ -161,8 +161,30 @@ class RoleModelViewSet(viewsets.ModelViewSet):
         return super().create(request)       
 
     def partial_update(self, request, pk=None):
+        if hasattr(self, 'reviser'):  
+            reviser = request.role.get('user_id', '0') if hasattr(request, 'role') and request.role else '0'
+            modify_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+            if self.reviser == True:
+                request.data['reviser'] = reviser
+                request.data['modify_time'] = modify_time
+            elif isinstance(self.reviser, tuple) or isinstance(self.reviser, list):
+                if len(self.reviser) > 0 and isinstance(self.reviser[0], str):
+                    request.data[self.reviser[0]] = reviser
+                if len(self.reviser) > 1 and isinstance(self.reviser[1], str):
+                    request.data[self.reviser[1]] = modify_time                       
         return super().partial_update(request, pk)
     
     def update(self, request, pk=None):
+        if hasattr(self, 'reviser'):  
+            reviser = request.role.get('user_id', '0') if hasattr(request, 'role') and request.role else '0'
+            modify_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+            if self.reviser == True:
+                request.data['reviser'] = reviser
+                request.data['modify_time'] = modify_time
+            elif isinstance(self.reviser, tuple) or isinstance(self.reviser, list):
+                if len(self.reviser) > 0 and isinstance(self.reviser[0], str):
+                    request.data[self.reviser[0]] = reviser
+                if len(self.reviser) > 1 and isinstance(self.reviser[1], str):
+                    request.data[self.reviser[1]] = modify_time                       
         return super().update(request, pk)
      

@@ -118,9 +118,9 @@ class SummaryRelatedField(RelatedField):
         try:
             return self.get_queryset().get(id=data)
         except ObjectDoesNotExist:
-            self.fail('does_not_exist', value=data)
+            raise ValidationError('关联对象不存在')
         except (TypeError, ValueError):
-            self.fail('invalid')
+            raise ValidationError('无效字段值')
 
     def to_representation(self, obj):
         result = {'id':obj.id}
