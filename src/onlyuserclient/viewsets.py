@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.core.cache import cache
 from rest_framework import exceptions,status,viewsets
@@ -145,4 +146,23 @@ class RoleModelViewSet(viewsets.ModelViewSet):
             serializer_class = serializer_classs.get('default')
         return serializer_class
 
-        
+    def create(self, request):
+        if hasattr(self, 'creater'):  
+            creater = request.role.get('user_id', '0') if hasattr(request, 'role') else '0'
+            create_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+            if self.creater == True:
+                request.data['creater'] = creater
+                request.data['create_time'] = create_time
+            elif isinstance(self.creater, tuple) or isinstance(self.creater, list):
+                if len(self.creater) > 0 and isinstance(self.creater[0], str):
+                    request.data[self.creater[0]] = creater
+                if len(self.creater) > 1 and isinstance(self.creater[1], str):
+                    request.data[self.creater[1]] = create_time               
+        return super().create(request)       
+
+    def partial_update(self, request, pk=None):
+        return super().partial_update(request, pk)
+    
+    def update(self, request, pk=None):
+        return super().update(request, pk)
+     

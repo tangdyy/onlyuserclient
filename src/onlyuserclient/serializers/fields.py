@@ -4,7 +4,8 @@ from rest_framework.serializers import CharField, Field, RelatedField, Validatio
 from onlyuserclient.api import onlyuserapi
 from onlyuserclient.settings import api_settings
 
-__all__ = ("HideCharField", "RemotePkRelatedField", "UserRelatedField", "OrganizationRelatedField")
+__all__ = ("HideCharField", "RemotePkRelatedField", "UserRelatedField", 
+           "OrganizationRelatedField", "SummaryRelatedField")
 
 class HideCharField(CharField):
     '''可以部分隐藏的字符串字段
