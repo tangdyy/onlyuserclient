@@ -59,26 +59,29 @@ class RemotePkRelatedField(Field):
         api = getattr(self, 'remote_api', onlyuserapi)
         res = getattr(api, self._resource, None)
         if res is None:
-            raise ValidationError("Api not found resource '%s'."%(self._resource,))
+            raise Exception("Api not found resource '%s'."%(self._resource,))
         act = getattr(res, self._action, None)
         if act is None:
-            raise ValidationError("Resource '%s' not found action '%s'."%(self._resource, self._action))
+            raise Exception("Resource '%s' not found action '%s'."%(self._resource, self._action))
 
         try:
             response = act(value)
         except:
-            raise ValidationError('Failed to access API interface.')
+            raise Exception('Failed to access API interface.')
 
         if response is None or response.status_code != 200:
-            return None
-            #raise ValidationError("ID:%s is not a valid object for resource '%s'."%(value, self._resource))  
+            raise Exception("ID:%s is not a valid object for resource '%s'."%(value, self._resource))  
 
         if api_settings.CACHE_API and  response.body:
             cache.set(cache_key, response.body, api_settings.CACHE_TTL)
         return response.body                
 
     def to_representation(self, value):
-        obj = self.get_remote_object(value)
+        try:
+            obj = self.get_remote_object(value)
+        except Exception as e:
+            obj = None
+        
         new_val = {'id':value}
         if obj:
             for field in self._fields:
@@ -86,19 +89,21 @@ class RemotePkRelatedField(Field):
         return new_val
 
     def to_internal_value(self, data):
-        obj = self.get_remote_object(data)
+        try:
+            obj = self.get_remote_object(data)
+        except Exception as e:
+            obj = None
         if obj is None:
-            return None
-            #raise ValidationError("ID:%s is not a valid object for resource '%s'."%(value, self._resource)) 
+            raise ValidationError("ID:%s is not a valid object for resource '%s'."%(data, self._resource)) 
         return data
 
-class UserRelatedField(Field):
+class UserRelatedField(RemotePkRelatedField):
     '''用户对象关联字段
     '''
     def __init__(self, *args, fields=['username', 'nickname'], **kwargs):
         super().__init__(*args, resource='users', action='retrieve', fields=fields, **kwargs)
 
-class OrganizationRelatedField(Field):
+class OrganizationRelatedField(RemotePkRelatedField):
     '''组织机构对象关联字段
     '''
     def __init__(self, *args, fields=['name'], **kwargs):

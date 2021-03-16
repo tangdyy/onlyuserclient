@@ -37,6 +37,9 @@ class RoleModelViewSet(viewsets.ModelViewSet):
             raise AttributeError("Attribute 'queryset' must be defined.")
         if not isinstance(qset, models.QuerySet):
             raise AttributeError("Attribute 'queryset' must be an instance of 'QuerySet'.")
+        if hasattr(self, 'close_role') and self.close_role:
+            return self.queryset
+        
         allow_not_auth = getattr(self, 'allow_not_auth', True)
 
         role = getattr(self.request, 'role', None)
@@ -157,24 +160,24 @@ class RoleModelViewSet(viewsets.ModelViewSet):
                 if len(self.creater) > 0 and isinstance(self.creater[0], str):
                     request.data[self.creater[0]] = creater
                 if len(self.creater) > 1 and isinstance(self.creater[1], str):
-                    request.data[self.creater[1]] = create_time               
+                    request.data[self.creater[1]] = create_time  
+        if hasattr(self, 'reviser'):  
+            reviser = request.role.get('user_id', '0') if hasattr(request, 'role') and request.role else '0'
+            modify_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
+            if self.reviser == True:
+                request.data['reviser'] = reviser
+                request.data['modify_time'] = modify_time
+            elif isinstance(self.reviser, tuple) or isinstance(self.reviser, list):
+                if len(self.reviser) > 0 and isinstance(self.reviser[0], str):
+                    request.data[self.reviser[0]] = reviser
+                if len(self.reviser) > 1 and isinstance(self.reviser[1], str):
+                    request.data[self.reviser[1]] = modify_time        
         return super().create(request)       
 
-    def partial_update(self, request, pk=None):
-        if hasattr(self, 'reviser'):  
-            reviser = request.role.get('user_id', '0') if hasattr(request, 'role') and request.role else '0'
-            modify_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
-            if self.reviser == True:
-                request.data['reviser'] = reviser
-                request.data['modify_time'] = modify_time
-            elif isinstance(self.reviser, tuple) or isinstance(self.reviser, list):
-                if len(self.reviser) > 0 and isinstance(self.reviser[0], str):
-                    request.data[self.reviser[0]] = reviser
-                if len(self.reviser) > 1 and isinstance(self.reviser[1], str):
-                    request.data[self.reviser[1]] = modify_time                       
-        return super().partial_update(request, pk)
+    def partial_update(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
     
-    def update(self, request, pk=None):
+    def update(self, request, *args, **kwargs):
         if hasattr(self, 'reviser'):  
             reviser = request.role.get('user_id', '0') if hasattr(request, 'role') and request.role else '0'
             modify_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') 
@@ -185,6 +188,11 @@ class RoleModelViewSet(viewsets.ModelViewSet):
                 if len(self.reviser) > 0 and isinstance(self.reviser[0], str):
                     request.data[self.reviser[0]] = reviser
                 if len(self.reviser) > 1 and isinstance(self.reviser[1], str):
-                    request.data[self.reviser[1]] = modify_time                       
-        return super().update(request, pk)
+                    request.data[self.reviser[1]] = modify_time   
+        if 'creater' in request.data:
+            request.data.pop('creater')  
+        if 'create_time' in request.data:
+            request.data.pop('create_time')  
+        kwargs['partial'] = True                           
+        return super().update(request,  *args, **kwargs)
      
