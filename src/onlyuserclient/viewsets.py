@@ -1,7 +1,10 @@
 import datetime
 from django.db import models
+from django.db.models.query import QuerySet
 from django.core.cache import cache
 from rest_framework import exceptions,status,viewsets
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from onlyuserclient.api import onlyuserapi
 from onlyuserclient.settings import api_settings
 
@@ -198,3 +201,18 @@ class RoleModelViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True                           
         return super().update(request,  *args, **kwargs)
      
+
+class ChoicesModelMixin():
+    '''为ModelViewSet混入选项列表方法
+    '''    
+    @action(methods=['get'], detail=False, url_path='choices', url_name='get choices') 
+    def choices(self, request):
+        queryset = self.get_queryset()
+        result = {}
+        if isinstance(queryset, QuerySet):
+            for field in queryset.model._meta.fields:
+                if hasattr(field, 'choices') and field.choices and (len(field.choices) > 0):
+                    result[field.name] = []
+                    for item in  field.choices:
+                        result[field.name].append({'value': item[0], 'label':item[1]})
+        return Response(result)

@@ -132,3 +132,4 @@ class SummaryRelatedField(RelatedField):
         for field in self.fields:
             result[field] = getattr(obj, field)
         return result
+
