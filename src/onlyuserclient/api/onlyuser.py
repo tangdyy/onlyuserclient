@@ -1,5 +1,6 @@
 from simple_rest_client.resource import Resource
 from .base import BaseAPI
+from onlyuserclient.settings import api_settings
 
 __all__ =('onlyuserapi',)
 
@@ -26,7 +27,7 @@ class OrganizationResource(Resource):
         "retrieve":{'method': 'GET', 'url': '/organizations/{}/'},
     }
 
-onlyuserapi = BaseAPI()
+onlyuserapi = BaseAPI(pfx=api_settings.ONLYUSER_PFX)
 onlyuserapi.add_resource(resource_name='roleperms', resource_class=RolepermResource)
 onlyuserapi.add_resource(resource_name='users', resource_class=UserResource)
 onlyuserapi.add_resource(resource_name='organizations', resource_class=OrganizationResource)

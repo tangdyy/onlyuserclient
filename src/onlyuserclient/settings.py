@@ -7,12 +7,16 @@ user_settings = getattr(settings,'ONLYUSERCLIENT',None)
 
 default_settings = {
     'API_ROOT_URL': '',
+    'ONLYUSER_PFX': None,
+    'BILLING_PFX': None,
     'API_TIMEOUT': 30,
     'API_HEADERS': {},
     'APIKEY_HEADER': 'apikey',
     'APIKEY': None,
     'CACHE_API': False,
     'CACHE_TTL': 60,
+    'HAS_ROLE': True,
+    
 } 
 
 api_settings = APISettings(user_settings,default_settings,None)

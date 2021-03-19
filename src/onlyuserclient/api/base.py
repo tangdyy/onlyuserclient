@@ -9,6 +9,9 @@ class BaseAPI(API):
     """
     def __init__(self, **kwargs):   
         url = kwargs.pop('api_root_url',api_settings.API_ROOT_URL)
+        pfx = kwargs.pop('pfx', None)
+        if pfx:
+            url = '%s%s'%(url, pfx)
         headers = kwargs.pop('headers',api_settings.API_HEADERS)
         headers.update({'Content-Type': 'application/json'})
         timeout = kwargs.pop('timeout',api_settings.API_TIMEOUT) or DEFAULT_API_TIMEOUT

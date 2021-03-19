@@ -37,7 +37,9 @@ class RoleModelViewSet(viewsets.ModelViewSet):
             raise AttributeError("Attribute 'queryset' must be defined.")
         if not isinstance(qset, models.QuerySet):
             raise AttributeError("Attribute 'queryset' must be an instance of 'QuerySet'.")
-        if hasattr(self, 'close_role') and self.close_role:
+        
+        has_role = api_settings.HAS_ROLE or (hasattr(self, 'has_role') and self.has_role)
+        if not has_role:
             return self.queryset
         
         allow_not_auth = getattr(self, 'allow_not_auth', True)
@@ -49,7 +51,7 @@ class RoleModelViewSet(viewsets.ModelViewSet):
         if not allow_not_auth and role is None: 
             return qset.none()
 
-        relate_field = getattr(self,'user_relate_field')
+        relate_field = getattr(self,'user_relate_field', None)
         if relate_field is None:
             raise AttributeError("Attribute 'user_relate_field' must be defined.")
 
