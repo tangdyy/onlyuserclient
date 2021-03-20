@@ -1,11 +1,19 @@
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.serializers import CharField, Field, RelatedField, ValidationError
+from rest_framework.serializers import CharField, ChoiceField, Field, RelatedField, ValidationError
 from onlyuserclient.api import onlyuserapi
 from onlyuserclient.settings import api_settings
 
-__all__ = ("HideCharField", "RemotePkRelatedField", "UserRelatedField", 
-           "OrganizationRelatedField", "SummaryRelatedField")
+__all__ = (
+    "HideCharField", 
+    "RemotePkRelatedField", 
+    "UserRelatedField", 
+    "OrganizationRelatedField", 
+    "SummaryRelatedField", 
+    "SelecterField",
+    "ApplicationRelatedField",
+           
+)
 
 class HideCharField(CharField):
     '''可以部分隐藏的字符串字段
@@ -79,7 +87,7 @@ class RemotePkRelatedField(Field):
     def to_representation(self, value):
         try:
             obj = self.get_remote_object(value)
-        except Exception as e:
+        except Exception:
             obj = None
         
         new_val = {'id':value}
@@ -109,6 +117,11 @@ class OrganizationRelatedField(RemotePkRelatedField):
     def __init__(self, *args, fields=['name'], **kwargs):
         super().__init__(*args, resource='organizations', action='retrieve', fields=fields, **kwargs)
 
+class ApplicationRelatedField(RemotePkRelatedField):
+    '''应用程序对象关联字段
+    '''
+    def __init__(self, *args, fields=['name'], **kwargs):
+        super().__init__(*args, resource='applications', action='retrieve', fields=fields, **kwargs)
        
 class SummaryRelatedField(RelatedField):
     """
@@ -133,3 +146,17 @@ class SummaryRelatedField(RelatedField):
             result[field] = getattr(obj, field)
         return result
 
+class SelecterField(ChoiceField):
+    '''选项对象字段
+    '''
+    def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
+
+    def to_representation(self, value):
+        if value in ('', None):
+            return value
+        obj = {
+            'value': value,
+            'label': self.choices.get(value, value)
+        } 
+        return obj

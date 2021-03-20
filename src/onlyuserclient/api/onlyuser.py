@@ -13,6 +13,7 @@ class RolepermResource(Resource):
         "userids_branch":{'method': 'POST', 'url': '/user-role-perms/userids-branch/'},
         "userids_organization":{'method': 'POST', 'url': '/user-role-perms/userids-organization/'}
     }
+
 class UserResource(Resource):
     '''用户帐号资源
     '''
@@ -27,7 +28,15 @@ class OrganizationResource(Resource):
         "retrieve":{'method': 'GET', 'url': '/organizations/{}/'},
     }
 
+class ApplicationResource(Resource):
+    '''应用程序资源
+    '''
+    actions = {
+        "retrieve":{'method': 'GET', 'url': '/applications/{}/'},
+    }    
+
 onlyuserapi = BaseAPI(pfx=api_settings.ONLYUSER_PFX)
 onlyuserapi.add_resource(resource_name='roleperms', resource_class=RolepermResource)
 onlyuserapi.add_resource(resource_name='users', resource_class=UserResource)
 onlyuserapi.add_resource(resource_name='organizations', resource_class=OrganizationResource)
+onlyuserapi.add_resource(resource_name='applications', resource_class=ApplicationResource)
