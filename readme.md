@@ -95,16 +95,29 @@ class ReadonlyDemoSerializer(serializers.ModelSerializer):
   可以操作所在组织整个组织机构树下全部用户的记录
 
 视图类除了`ModelViewSet`的标准属性外，需要定义以下属性：  
-+ `queryset` 
++ `queryset`   
   必须定义，是Model的QuerySet对象。
-+ `user_relate_field` 
++ `user_relate_field`   
   必须定义，Model中关联`User`的字段名，此字段保存`User`对象的`ID`值，类型为`CHAR(24)`。
-+ `serializer_classs`  
++ `serializer_classs`    
   必须定义，`dict`类型，key是tag, value是序列化类。
-+ `org_relate_field`
++ `org_relate_field`   
   可选，保存`Organization`对象`ID`，默认是关联到根组织。
-+ `allow_not_auth`
-  可选，是否允许未鉴权访问，默认`False`。  
++ `allow_not_auth`   
+  可选，是否允许未鉴权访问，默认`False`。 
++ `creater`   
+  **v1.0.10 增加**。     
+  可选，记录创建者字段名，如果有这个属性，将根据登录用户自动填充创建者和创建时间字段。    
+  属性值：    
+  * `True`, 默认字段名`creater`、`create_time`。   
+  * `list`对象，自定义字段名，第一个元素是创建者字段名，第二个是创建时间字段名。    
++ `reviser`   
+  **v1.0.10 增加**。     
+  可选，记录修改者字段名，如果有这个属性，将根据登录用户自动填充修改者和修改时间字段。    
+  属性值：    
+  * `True`, 默认字段名`reviser`、`modify_time`。   
+  * `list`对象，自定义字段名，第一个元素是修改者字段名，第二个是修改时间字段名。       
+  
 
 ```python
 from onlyuserclient.viewsets import RoleModelViewSet
@@ -146,3 +159,32 @@ class RoleViewSet(RoleModelViewSet):
   onlyuser的`Organization`关联字段
 + `SummaryRelatedField`      
   关联字段摘要信息字段
++ `ApplicationRelatedField`   
+  onlyuser的`Application`关联字段
++ `SelecterField`   
+  选项字段，在序列化类中定义属性`serializer_choice_field`，值等于`SelecterField`。        
+  ``` 
+
+### 4.`ChoicesModelMixin`类    
+为模型视图类混入选项字段的选项列表查询方法。  
+```python
+class ResourceViewSet(RoleModelViewSet, ChoicesModelMixin):
+    pass
+```
+查询选项列表URL    
+```shell 
+GET resources/choices
+```
+返回结果格式
+```json
+{
+  "field1":[
+    ["value1", "label1"],
+    ["value2", "label2"]
+  ],
+  "field2":[
+    ["value1", "label1"],
+    ["value2", "label2"]
+  ]
+}
+```
