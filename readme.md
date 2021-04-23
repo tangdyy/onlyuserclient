@@ -7,9 +7,17 @@
 + djangorestframework >= 3.10.0
 
 ## 安装
++ 源码包安装    
 ```shell
 python setup.py install
 ```
++ pip安装  
+```shell
+pip install onlyuserclient  
+# 升级
+pip install -U onlyuserclient
+```
+
 
 ## 快速开始
 
