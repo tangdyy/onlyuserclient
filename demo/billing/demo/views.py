@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -27,3 +28,9 @@ class Demo1ViewSet(viewsets.ViewSet):
             'result': 'this is demo1 bill_postpay.'
         }
         return Response(data)
+
+
+def fun_list(request):
+    '''函数视图
+    '''
+    return HttpResponse('aaaaaa')

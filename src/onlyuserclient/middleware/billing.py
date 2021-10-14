@@ -19,8 +19,10 @@ class BillingMiddleware():
         return response 
     
     def process_view(self, request, view_func, view_args, view_kwargs):
-        print(view_func.cls, '\n') 
-        print(view_func.actions, '\n')
-        print(dir(view_func.cls), '\n')
+        print(view_func.__name__)
+        print(dir(view_func))
+        #print(view_func.cls, '\n') 
+        #print(view_func.actions, '\n')
+        #print(dir(view_func.cls), '\n')
         print(view_args, view_kwargs, '\n')
         return None
