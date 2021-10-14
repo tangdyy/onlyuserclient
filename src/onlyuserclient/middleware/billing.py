@@ -15,6 +15,7 @@ class BillingMiddleware():
         print(dir(request))
         print('this get_response before.')
         response = self.get_response(request)
+        print('after ', request.bill)
         print('this get_response after.')
         return response 
     

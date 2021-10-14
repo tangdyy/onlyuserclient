@@ -134,3 +134,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [],
     'UNAUTHENTICATED_USER': None,
 }
+
+
+BILLINGCLIENT = {
+    'SERVICES': {
+        'bill1': (),
+        'bill2': (),
+    }
+}
