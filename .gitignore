@@ -3,3 +3,4 @@ __pycache__
 /build
 /src/onlyuserclient.egg-info
 /venv
+/demo/billing/db.sqlite3
