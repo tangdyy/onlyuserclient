@@ -1,5 +1,6 @@
 from functools import wraps
 from django.http import HttpRequest
+from django.utils import timezone
 from onlyuserclient.settings import billing_settings
 
 class api_charge():
@@ -15,32 +16,19 @@ class api_charge():
         ):
         if service is None or not service in billing_settings.SERVICES:
             raise ValueError('The service is not a valid value.')
+        self.config = {}
+        self.config['service'] = service
+        self.config['before'] = before
+        self.config['after'] = after
+        self.config['usable'] = usable
+        self.config['organization_bill'] = organization_bill
+        self.config['user_bill'] = user_bill
 
-        self.service = service
-        self.before = before
-        self.after = after
-        self.usable = usable
-        self.organization_bill = organization_bill
-        self.user_bill = user_bill
-        
-    def get_count(self):
-        return 1
-
-    def get_start_time(self):
-        return None
-
-    def get_finish_time(self):
-        return None
- 
     def __call__(self, func):
+        setattr(func, '__bill_config', self.config)
+        print(dir(func), func.__name__, func.__module__, func.__qualname__)
         @wraps(func)
-        def wrapped_function(request, *args, **kwargs):
-            if request is None or  not isinstance(request, HttpRequest):
-                raise ValueError(
-                    "The first parameter of the function decorated with 'api_charge' must be 'HttpRequest' object."
-                )
-            print('decorator', request, args, kwargs)
-            response = func(request, *args, **kwargs)
-            setattr(request, 'bill', ('a', 'b'))
+        def wrapped_function(*args, **kwargs):
+            response = func(*args, **kwargs)
             return response
         return wrapped_function

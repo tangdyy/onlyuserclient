@@ -138,7 +138,7 @@ REST_FRAMEWORK = {
 
 BILLINGCLIENT = {
     'SERVICES': {
-        'bill1': (),
-        'bill2': (),
+        'bill1': ('label1', None),
+        'bill2': ('label2', None),
     }
 }
