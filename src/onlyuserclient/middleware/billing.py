@@ -4,6 +4,7 @@ class BillingMiddleware():
     '''计费控制中间建
     '''
     def __init__(self, get_response):
+        print('this middleware __init__ ')
         self.get_response = get_response
 
     def get_user_id(self, request=None):
