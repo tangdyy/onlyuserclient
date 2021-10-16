@@ -35,8 +35,45 @@ class ApplicationResource(Resource):
         "retrieve":{'method': 'GET', 'url': '/applications/{}/'},
     }    
 
-onlyuserapi = BaseAPI(pfx=api_settings.ONLYUSER_PFX)
-onlyuserapi.add_resource(resource_name='roleperms', resource_class=RolepermResource)
-onlyuserapi.add_resource(resource_name='users', resource_class=UserResource)
-onlyuserapi.add_resource(resource_name='organizations', resource_class=OrganizationResource)
-onlyuserapi.add_resource(resource_name='applications', resource_class=ApplicationResource)
+
+class BillEventResource(Resource):
+    '''计费事件资源
+    '''
+    actions = {
+        "apply_application":{'method': 'GET', 'url': '/billevents/apply-application/'},
+    }    
+
+
+
+class OnlyuserApi(BaseAPI): 
+    '''Onlyuser接口
+    '''
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.add_resource(resource_name='roleperms', resource_class=RolepermResource)
+        self.add_resource(resource_name='users', resource_class=UserResource)
+        self.add_resource(resource_name='organizations', resource_class=OrganizationResource)
+        self.add_resource(resource_name='applications', resource_class=ApplicationResource)
+        self.add_resource(resource_name='billevents', resource_class=BillEventResource)
+    
+    def apply_application(self, application, user, organization=None):
+        if api_settings.LOCAL:
+            return 0, 'this local mode.'
+            
+        params = {
+            'application': application, 
+            'user': user, 
+            'organization': organization
+        }
+        try:
+            response = self.billevents.apply_application(params=params)
+            code = response.body.get('code', None)
+            detail = response.body.get('detail', None)
+        except:
+            code = None
+            detail = None
+            pass
+        return code, detail
+
+
+onlyuserapi = OnlyuserApi(pfx=api_settings.ONLYUSER_PFX)

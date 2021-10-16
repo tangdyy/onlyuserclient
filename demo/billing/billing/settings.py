@@ -136,8 +136,13 @@ REST_FRAMEWORK = {
 }
 
 
+ONLYUSERCLIENT = {
+    'API_ROOT_URL': 'http://127.0.0.1:8000'
+}
+
 BILLINGCLIENT = {
-    'SERVICES': {
+    'API_ROOT_URL': 'http://127.0.0.1:8001',
+    'SERVICE_ITEMS': {
         'bill1': ('label1', None),
         'bill2': ('label2', None),
     }

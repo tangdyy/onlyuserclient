@@ -24,7 +24,7 @@ class Demo1ViewSet(viewsets.ViewSet):
         url_path='bill-postpay'
     )
     @api_charge(
-        service='bill1'
+        service_key='bill1'
     )
     def bill_postpay(self, request, pk=None):
         data = {
@@ -34,7 +34,7 @@ class Demo1ViewSet(viewsets.ViewSet):
         return Response(data)
 
 @api_charge(
-    service='bill2'
+    service_key='bill2'
 )
 def fun_list(request):
     '''函数视图
