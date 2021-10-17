@@ -1,5 +1,5 @@
 from functools import wraps
-from onlyuserclient.utils.functions import get_billapi_handler
+from onlyuserclient.handler import get_billapi_handler
 
 class api_charge():
     '''API计费装饰器类
@@ -21,10 +21,12 @@ class api_charge():
  
     def __call__(self, func):
         setattr(func, '_bill_handler', self.bill_handler)
+        func._bill_handler.fun_name = func.__name__
+        func._bill_handler.fun_doc = func.__doc__
         @wraps(func)
         def wrapped_function(*args, **kwargs):
             func._bill_handler.before_api(*args, **kwargs)
             response = func(*args, **kwargs)
-            func._bill_handler.after_api(*args, **kwargs)
+            func._bill_handler.after_api(response, *args, **kwargs)
             return response
         return wrapped_function

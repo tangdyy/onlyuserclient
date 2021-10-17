@@ -233,7 +233,7 @@ class BillingApi(BaseAPI):
 # 计费服务接口对象
 billingapi = BillingApi(
     api_root_url=billing_settings.API_ROOT_URL,
-    pfx=billing_settings.PFX,
+    pfx=billing_settings.API_PFX,
     headers=billing_settings.API_HEADERS,
     timeout=billing_settings.API_TIMEOUT,
     apikey=billing_settings.APIKEY    

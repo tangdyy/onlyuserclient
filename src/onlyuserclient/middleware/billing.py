@@ -6,7 +6,7 @@ from onlyuserclient.settings import billing_settings
 from onlyuserclient.settings import onlyuser_settings
 
 class BillingMiddleware():
-    '''计费控制中间建
+    '''计费控制中间件
     '''
     def __init__(self, get_response):
 

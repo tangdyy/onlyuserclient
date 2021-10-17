@@ -145,8 +145,8 @@ BILLINGCLIENT = {
     'API_ROOT_URL': 'http://127.0.0.1:8001',
     'APPLICATION_SERVICE': True,
     'SERVICE_ITEMS': {
-        'bill1': ('label1', 'onlyuserclient.handler.BillApiHandler'),
-        'bill2': ('label2', None),
+        'bill1': ('label1', '服务1', 'onlyuserclient.handler.BillApiHandler'),
+        'bill2': ('label2', '服务1', None),
     },
     'LOCAL': True
 }

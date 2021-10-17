@@ -95,7 +95,8 @@ class OnlyuserApi(BaseAPI):
             response = self.billevents.apply_application(params=params)
             code = response.body.get('code', None)
             detail = response.body.get('detail', None)
-            cache.set(ckey, (code, detail), CACHE_TTL)
+            if CACHE_API:
+                cache.set(ckey, (code, detail), CACHE_TTL)
         except ClientError as exec:
             response = getattr(exec, 'response', None)
             if response:
@@ -113,13 +114,25 @@ class OnlyuserApi(BaseAPI):
         if api_settings.LOCAL:
             logger.warning('Onlyuser api is local mode.')
             return 'P00000000'        
-
+        ckey = functions.generate_cache_key(
+            'BAPIOB', 
+            'organization_billaccount', 
+            organization_id
+        )
+        if CACHE_API:
+            result = cache.get(ckey)
+            if result:
+                return result        
         try:
             response = self.organizations.billaccount(organization_id)
             accno = response.body.get('accno', None)
+            if accno and CACHE_API:
+                cache.set(ckey, accno, CACHE_TTL)
         except:
             accno = None
             pass
         return accno
+
+
 
 onlyuserapi = OnlyuserApi(pfx=api_settings.ONLYUSER_PFX)

@@ -1,50 +1,11 @@
-'''处理器工具函数
+'''工具函数
 '''
-import importlib
+import os
+import datetime
+import random
 from onlyuserclient.settings import billing_settings
 from onlyuserclient.settings import onlyuser_settings
-from onlyuserclient.handler import BillApiHandler
 from django.core.cache import caches, cache
-
-
-def get_billapi_handler(
-    service_key,
-    before=True,
-    after=True,
-    usable=True,
-    application_service=False
-    ):
-    '''返回一个API接口计费处理器对象.
-    '''
-    service_item = billing_settings.SERVICE_ITEMS.get(service_key, None)
-    if service_item is None:
-        raise ValueError('The service key is not a valid value.')
-     
-    if len(service_item) < 2:
-        raise ValueError('settings BILLING.SERVICE_ITEMS key: %s error.'%(service_key,))
-
-    service_label = service_item[0]
-    bill_handler_module =  service_item[1]
-    bill_handler_cls = None
-    if bill_handler_module:
-        arr = bill_handler_module.split('.')
-        module_name = '.'.join(arr[:-1])
-        cls_name = arr[-1:][0]
-        module = importlib.import_module(module_name)
-        bill_handler_cls = getattr(module, cls_name, None)
-        if bill_handler_cls is None:
-            raise ValueError('The service itme handler is not valid value.')
-    else:
-        bill_handler_cls = BillApiHandler
-    
-    handler = bill_handler_cls(
-        service_label,
-        before=before,
-        after=after,
-        usable=usable,
-        application_service=application_service       
-    ) 
-    return handler
 
 
 def get_bill_cache():
@@ -64,3 +25,37 @@ def generate_cache_key(pfx, *args, **kwargs):
     for k, v in kwargs.items():
         keystr += '{}:{}'.format(k, v)
     return '{}:{}'.format(pfx, hash(keystr))
+
+
+def generate_serial_number(prefix=''):
+    '''生成序列号
+    '''    
+    g = globals()
+    counter = g.get('_SERIAL_NUMBER_COUNTER', None)
+    current = datetime.datetime.now()
+    pfx = current.strftime('%Y%m%d%H%M%S')
+    if counter is None:
+        counter = {
+            'pfx': pfx,
+            'count': 0 
+        }
+        
+    systype = os.name
+    host = 'Unkwon hostname%d'%(random.randint(0, 99999999999))
+    if systype == 'nt':
+        host = os.getenv('computername')
+    elif systype == 'posix':
+        h = os.popen('echo $HOSTNAME')
+        try:
+            host = h.read()
+        finally:
+            h.close()
+    if pfx == counter['pfx']:
+        counter['count'] += 1
+    else:
+        counter['pfx'] = pfx
+        counter['count'] = 0    
+    g['_SERIAL_NUMBER_COUNTER'] = counter
+    hostid = '%s%d'%(host, os.getpid())
+    return '%s%s%04d%02d'%(prefix, pfx, abs(hash(hostid)>>56), counter['count'])
+

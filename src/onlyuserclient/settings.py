@@ -35,6 +35,8 @@ billing_default_settings = {
     'RPC_TIMEOUT': 5,
     # 计费服务器Restful接口URL
     'API_ROOT_URL': None,
+    # API URL前缀
+    'API_PFX': None,
     # 计费服务器Restful接口超时(秒)
     'API_TIMEOUT': 5,
     # 计费服务器Restful接口附加Http Header
