@@ -1,8 +1,18 @@
+import logging
 from simple_rest_client.resource import Resource
+from simple_rest_client.exceptions import ClientError
+from onlyuserclient import exceptions
+from onlyuserclient.utils import functions
 from .base import BaseAPI
 from onlyuserclient.settings import api_settings
 
 __all__ =('onlyuserapi',)
+
+logger = logging.getLogger('onlyuserclient.api.onlyuser')
+CACHE_API  = api_settings.CACHE_API
+CACHE_TTL = api_settings.CACHE_TTL or 60
+cache = functions.get_onlyuser_cache()
+
 
 class RolepermResource(Resource):
     '''角色权限访问
@@ -26,6 +36,7 @@ class OrganizationResource(Resource):
     '''
     actions = {
         "retrieve":{'method': 'GET', 'url': '/organizations/{}/'},
+        "billaccount":{'method': 'GET', 'url': '/organizations/{}/billaccount/'}, 
     }
 
 class ApplicationResource(Resource):
@@ -57,23 +68,58 @@ class OnlyuserApi(BaseAPI):
         self.add_resource(resource_name='billevents', resource_class=BillEventResource)
     
     def apply_application(self, application, user, organization=None):
+        logger.debug(
+            'Call onlyuser api apply_application,'
+            'application:{}, user:{}, organization:{}.'.format(
+                application, user, organization
+            )
+        )
         if api_settings.LOCAL:
+            logger.warning('Onlyuser api is local mode.')
             return 0, 'this local mode.'
-            
+        
+        ckey = functions.generate_cache_key('BAPIAA', application, user, organization)
+        if CACHE_API:
+            result = cache.get(ckey)
+            if result:
+                return result
+
         params = {
             'application': application, 
             'user': user, 
             'organization': organization
         }
+        code = None
+        detail = None
         try:
             response = self.billevents.apply_application(params=params)
             code = response.body.get('code', None)
             detail = response.body.get('detail', None)
+            cache.set(ckey, (code, detail), CACHE_TTL)
+        except ClientError as exec:
+            response = getattr(exec, 'response', None)
+            if response:
+                code = response.body.get('code', None)
+                detail = response.body.get('detail', None)
         except:
-            code = None
-            detail = None
             pass
         return code, detail
 
+    def get_organization_billaccount(self, organization_id):
+        logger.debug(
+            'Call onlyuser api organization billaccount,'
+            'organization:{}.'.format(organization_id )
+        )
+        if api_settings.LOCAL:
+            logger.warning('Onlyuser api is local mode.')
+            return 'P00000000'        
+
+        try:
+            response = self.organizations.billaccount(organization_id)
+            accno = response.body.get('accno', None)
+        except:
+            accno = None
+            pass
+        return accno
 
 onlyuserapi = OnlyuserApi(pfx=api_settings.ONLYUSER_PFX)
