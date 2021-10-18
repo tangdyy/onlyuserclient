@@ -3,7 +3,6 @@ from rest_framework.exceptions import APIException
 from simple_rest_client.resource import Resource
 from simple_rest_client import exceptions
 from django.utils import timezone
-from django.core.cache import caches, cache
 from .base import BaseAPI
 from onlyuserclient.settings import billing_settings
 from onlyuserclient.utils import functions
@@ -76,9 +75,11 @@ class BillingApi(BaseAPI):
         '''返回用户个人计费账号
         '''
         accno = None
-        ckey = ''
+        ckey = functions.generate_cache_key(
+            'BAPIGA',
+            userid
+        )
         if CACHE_API:
-            ckey = 'accountbyuser%d'%(hash(userid),)
             accno = dbcache.get(ckey)
             if accno:
                 return accno 
@@ -86,11 +87,12 @@ class BillingApi(BaseAPI):
         try:
             response = self.accounts.list(params={'userid': userid})
             accno = response.body.get('number', None)
-        except exceptions.ClientError as e:
+        except:
+            accno = None
             pass
         if accno is None:
             raise BillAccountNotExist()
-        if CACHE_API:
+        if CACHE_API and accno is not None:
             dbcache.set(ckey, accno, CACHE_TTL)
         return accno        
 

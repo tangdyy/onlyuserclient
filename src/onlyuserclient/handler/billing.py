@@ -2,6 +2,7 @@ import importlib
 from django.utils import timezone
 from django.http import HttpRequest
 from rest_framework.request import Request
+from onlyuserclient import exceptions
 from onlyuserclient.settings import billing_settings
 from onlyuserclient.utils import functions
 from onlyuserclient.api import billingapi
@@ -72,6 +73,7 @@ class BillApiHandler():
         return timezone.now()
 
     def get_summary(self, request, response=None):
+        tpl = '服务项目：{};应用程序：{};组织/团队：{};'
         return '调用API接口：%s，%s'%(self.fun_doc, self.fun_name)
 
     def set_service_params(self, request, name, value):
@@ -108,15 +110,18 @@ class BillApiHandler():
     def get_accno_by_organization(self, request):
         '''获取组织绑定的计费账号
         '''
-        app_id = self._get_current_org_id(request)
-        return onlyuserapi.get_organization_billaccount(app_id)
+        org_id = self._get_current_org_id(request)
+        if org_id is None:
+            return None
+        return onlyuserapi.get_organization_billaccount(org_id)
 
     def get_accno_by_user(self, request):
         '''获取用户的计费账号
         '''
         user_id = self._get_user_id(request)
-        return None
-
+        if user_id is None:
+            return None
+        return billingapi.get_account_by_user(user_id)
 
     def request_service(self, request):
         '''请求开始服务计费
@@ -132,7 +137,22 @@ class BillApiHandler():
     def apply_application(self, request):
         '''检查应用是否计费可用
         '''
+        application = self.get_service_params('application', None)
+        organization = self.get_service_params('organization', None)
+        user = self.get_service_params('user', None)
+        code, detail = onlyuserapi.apply_application(
+            application, 
+            user, 
+            organization
+        )
         setattr(request, '_application_check', True)
+        if code != 0:
+            raise exceptions.ApplicationForbidden(
+                application, 
+                user, 
+                organization,
+                detail
+            )
 
     def before_api(self, *args, **kwargs):
         '''API调用前

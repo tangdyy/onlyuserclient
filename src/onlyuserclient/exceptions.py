@@ -32,6 +32,8 @@ class OnlyuserclientApiException(APIException):
 
 
 class RestfulClientError(OnlyuserclientApiException):
+    '''接口访问异常
+    '''
     default_detail = 'API接口访问异常。'
     default_code = 'reatful_client_error'
     default_error_code = 700 
@@ -49,3 +51,22 @@ class RestfulClientError(OnlyuserclientApiException):
                  
         super().__init__(code=code, detail=detail, status_code=status_code)
 
+
+class ApplicationForbidden(OnlyuserclientApiException):
+    '''禁止访问应用程序
+    '''
+    status_code = 403
+    default_detail = '禁止访问应用程序。'
+    default_code = 'application_forbidden'
+    default_error_code = 703       
+    def __init__(self, application=None, organization=None, user=None, detail=None):
+        super().__init__(
+            detail=detail,
+            application=application,
+            organization=organization,
+            user=user
+        )
+        self.application = application
+        self.organization = organization
+        self.user = user
+        
