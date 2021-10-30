@@ -7,7 +7,7 @@ from onlyuserclient.decorator import api_charge
 class Demo1ViewSet(viewsets.ViewSet):
     '''demo1
     '''
-    application_service = True
+    application_service = False
     
     def list(self, request):
         data = {

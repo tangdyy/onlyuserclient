@@ -73,8 +73,17 @@ class BillApiHandler():
         return timezone.now()
 
     def get_summary(self, request, response=None):
-        tpl = '服务项目：{};应用程序：{};组织/团队：{};'
-        return '调用API接口：%s，%s'%(self.fun_doc, self.fun_name)
+        tpl = '服务项目：{};应用程序：{};组织/团队：{};用户：{};'
+        app = self.get_application_info(request)
+        org = self.get_organization_info(request)
+        user = self.get_user_info(request)
+        summary = tpl.format(
+            self.service_name,
+            app['name'] if app else '',
+            org['name'] if org else '',           
+            (user['username'] + ',' + user['nickname'] ) if user else ''
+        )
+        return summary
 
     def set_service_params(self, request, name, value):
         '''设置服务参数
@@ -95,17 +104,26 @@ class BillApiHandler():
     def get_application_info(self, request):
         '''获得请求对象的应用信息
         '''
-        pass
+        appid= self._get_application_id(request)
+        if appid is None:
+            return None
+        return onlyuserapi.get_organization_info(appid)
 
     def get_organization_info(self, request):
         '''获取请求对象的组织信息
         '''
-        pass
+        orgid = self._get_current_org_id(request)
+        if orgid is None:
+            return None
+        return onlyuserapi.get_organization_info(orgid)
 
     def get_user_info(self, request):
         '''获取请求对象的用户信息
         '''
-        pass
+        userid = self._get_user_id(request)
+        if userid is None:
+            return None
+        return onlyuserapi.get_user_info(userid)
 
     def get_accno_by_organization(self, request):
         '''获取组织绑定的计费账号
@@ -126,20 +144,80 @@ class BillApiHandler():
     def request_service(self, request):
         '''请求开始服务计费
         '''
-
+        accno = self.get_service_params(request, 'accno')
+        providerno = self.get_service_params(request, 'providerno')
+        label = self.get_service_params(request, 'label')
+        start_time = self.get_service_params(request, 'start_time')
+        count = self.get_service_params(request, 'count')
+        summary = self.get_service_params(request, 'summary')
+        application = self.get_service_params(request, 'application')
+        organization = self.get_service_params(request, 'organization')        
+        svcno, expire = billingapi.request_service(
+            accno,
+            providerno, 
+            label,
+            start_time,
+            count,        
+            summary,
+            application,
+            organization
+        )
+        if svcno is None:
+            raise exceptions.ServiceForbidden(
+                application,
+                organization,
+                self.get_service_params(request, 'user'),
+                label
+            )
+        self.set_service_params(request, 'svcno', svcno)
 
     def finish_service(self, request, response):
-        pass
+        '''结束服务计费
+        '''
+        accno = self.get_service_params(request, 'accno')
+        providerno = self.get_service_params(request, 'providerno')
+        label = self.get_service_params(request, 'label')
+        start_time = self.get_service_params(request, 'start_time')
+        count = self.get_service_params(request, 'count')
+        summary = self.get_service_params(request, 'summary')
+        application = self.get_service_params(request, 'application')
+        organization = self.get_service_params(request, 'organization')    
+        finish_time = self.get_service_params(request, 'finish_time')
+        svcno = self.get_service_params(request, 'svcno')    
+        billingapi.finished_service(
+            accno,
+            providerno,
+            label,
+            start_time,
+            finish_time,
+            count,        
+            summary,
+            application,
+            organization,
+            svcno
+        )
 
     def usable_service(self, request):
-        pass
+        '''检查
+        '''
+        accno = self.get_service_params(request, 'accno')
+        label = self.get_service_params(request, 'label')
+        count = self.get_service_params(request, 'count')
+        usable = billingapi.usable_service(accno, label, count)
+        if not usable:
+            raise exceptions.ServiceForbidden(
+                self.get_service_params(request, 'application'),
+                self.get_service_params(request, 'organization'),
+                self.get_service_params(request, 'user'),
+                label
+            )            
 
     def apply_application(self, request):
         '''检查应用是否计费可用
         '''
-        application = self.get_service_params('application', None)
-        organization = self.get_service_params('organization', None)
-        user = self.get_service_params('user', None)
+        application = self.get_service_params(request, 'application')
+        organization = self.get_service_params(request, 'organization')
+        user = self.get_service_params(request, 'user')
         code, detail = onlyuserapi.apply_application(
             application, 
             user, 
@@ -183,6 +261,28 @@ class BillApiHandler():
         '''API调用后
         '''
         request = self._get_request(*args, **kwargs)
+        before_count = self.get_before_count(request)
+        before_start_time = self.get_before_start_time(request)
+        self.set_service_params(
+            request, 
+            'count', 
+            self.get_after_count(request, response, before_count)
+        )
+        self.set_service_params(
+            request, 
+            'start_time', 
+            self.get_after_start_time(request, response, before_start_time)
+        )  
+        self.set_service_params(
+            request,
+            'finish_time',
+            self.get_finish_time(request, response)
+        )  
+        self.set_service_params(
+            request,
+            'summary',
+            self.get_summary(request, response)
+        )    
         self.finish_service(request, response)
 
 

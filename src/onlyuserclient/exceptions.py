@@ -70,3 +70,21 @@ class ApplicationForbidden(OnlyuserclientApiException):
         self.organization = organization
         self.user = user
         
+
+class ServiceForbidden(OnlyuserclientApiException):
+    '''不允许访问服务功能
+    '''
+    status_code = 403
+    default_detail = '账号未开通服务项目或账户欠费，不允许访问服务功能。'
+    default_code = 'service_forbidden'
+    default_error_code = 704       
+    def __init__(self, application=None, organization=None, user=None, label=None, detail=None):
+        super().__init__(
+            detail=detail,
+            application=application,
+            organization=organization,
+            user=user
+        )
+        self.application = application
+        self.organization = organization
+        self.user = user

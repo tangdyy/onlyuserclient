@@ -138,15 +138,17 @@ REST_FRAMEWORK = {
 
 ONLYUSERCLIENT = {
     'API_ROOT_URL': 'http://127.0.0.1:8000',
-    'LOCAL': True
+    'CACHE_API': False,
+    'LOCAL': False
 }
 
 BILLINGCLIENT = {
     'API_ROOT_URL': 'http://127.0.0.1:8001',
-    'APPLICATION_SERVICE': True,
+    'CACHE_API': False,
+    'APPLICATION_SERVICE': False,
     'SERVICE_ITEMS': {
         'bill1': ('label1', '服务1', 'onlyuserclient.handler.BillApiHandler'),
         'bill2': ('label2', '服务1', None),
     },
-    'LOCAL': True
+    'LOCAL': False
 }

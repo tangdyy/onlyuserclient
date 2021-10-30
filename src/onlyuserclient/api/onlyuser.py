@@ -68,6 +68,8 @@ class OnlyuserApi(BaseAPI):
         self.add_resource(resource_name='billevents', resource_class=BillEventResource)
     
     def apply_application(self, application, user, organization=None):
+        '''使用应用程序
+        '''
         logger.debug(
             'Call onlyuser api apply_application,'
             'application:{}, user:{}, organization:{}.'.format(
@@ -78,7 +80,12 @@ class OnlyuserApi(BaseAPI):
             logger.warning('Onlyuser api is local mode.')
             return 0, 'this local mode.'
         
-        ckey = functions.generate_cache_key('BAPIAA', application, user, organization)
+        ckey = functions.generate_cache_key(
+            'BAPIAA', 
+            application, 
+            user, 
+            organization
+        )
         if CACHE_API:
             result = cache.get(ckey)
             if result:
@@ -107,6 +114,8 @@ class OnlyuserApi(BaseAPI):
         return code, detail
 
     def get_organization_billaccount(self, organization_id):
+        '''查询组织绑定计费账号
+        '''
         logger.debug(
             'Call onlyuser api organization billaccount,'
             'organization:{}.'.format(organization_id )
@@ -133,6 +142,111 @@ class OnlyuserApi(BaseAPI):
             pass
         return accno
 
+    def get_application_info(self, application_id):
+        '''查询应用程序信息
+        '''
+        logger.debug(
+            'Call onlyuser api application info,'
+            'application:{}.'.format(application_id)
+        )
+        if api_settings.LOCAL:
+            logger.warning('Onlyuser api is local mode.')
+            data={
+                'id': application_id,
+                'name': 'this local model application'
+            }
+            return data
+
+        ckey = functions.generate_cache_key(
+            'BAPIAI', 
+            'application_info', 
+            application_id
+        )
+        if CACHE_API:
+            result = cache.get(ckey)
+            if result:
+                return result             
+
+        data =None
+        try:
+            response = self.applications.retrieve(application_id)
+            data = response.body
+            if CACHE_API:
+                cache.set(ckey, data, CACHE_TTL)
+        except:
+            pass
+        return data
+
+    def get_organization_info(self, organization_id):
+        '''查询组织信息
+        '''
+        logger.debug(
+            'Call onlyuser api organization info,'
+            'organization:{}.'.format(organization_id)
+        )
+        if api_settings.LOCAL:
+            logger.warning('Onlyuser api is local mode.')
+            data={
+                'id': organization_id,
+                'name': 'this local model organization'
+            }
+            return data
+
+        ckey = functions.generate_cache_key(
+            'BAPIOI', 
+            'organization_info', 
+            organization_id
+        )
+        if CACHE_API:
+            result = cache.get(ckey)
+            if result:
+                return result             
+
+        data =None
+        try:
+            response = self.organizations.retrieve(organization_id)
+            data = response.body
+            if CACHE_API:
+                cache.set(ckey, data, CACHE_TTL)
+        except:
+            pass
+        return data
+
+    def get_user_info(self, user_id):
+        '''查询用户信息
+        '''
+        logger.debug(
+            'Call onlyuser api user info,'
+            'user:{}.'.format(user_id)
+        )
+        if api_settings.LOCAL:
+            logger.warning('Onlyuser api is local mode.')
+            data={
+                'id': user_id,
+                'username': 'localuser',
+                'nickname': 'local user'
+            }
+            return data
+
+        ckey = functions.generate_cache_key(
+            'BAPIUI', 
+            'user_info', 
+            user_id
+        )
+        if CACHE_API:
+            result = cache.get(ckey)
+            if result:
+                return result             
+
+        data =None
+        try:
+            response = self.users.retrieve(user_id)
+            data = response.body
+            if CACHE_API:
+                cache.set(ckey, data, CACHE_TTL)
+        except:
+            pass
+        return data
 
 
 onlyuserapi = OnlyuserApi(pfx=api_settings.ONLYUSER_PFX)

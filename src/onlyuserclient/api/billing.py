@@ -109,9 +109,16 @@ class BillingApi(BaseAPI):
         expire=None
         ):
         '''请求资源使用
-        '''        
+        ''' 
+        if accno is None or providerno is None or label is None:
+            raise BillingFail()
+                           
         if start_time is None:
             start_time = timezone.localtime()
+        start_time = start_time.astimezone(timezone.utc)
+        if expire is not None:
+            expire = expire.astimezone(timezone.utc)
+
         data = {
             'providerno': providerno,
             'label': label,
@@ -134,10 +141,7 @@ class BillingApi(BaseAPI):
                 expire, 
                 '%Y-%m-%d %H:%M:%S'
             )
-            adt = timezone.localtime(
-                timezone.make_aware(ndt), 
-                timezone.utc
-            )
+            adt = timezone.make_aware(ndt, timezone.utc)
         except:
             adt = None
         return svcno, adt              
@@ -156,9 +160,17 @@ class BillingApi(BaseAPI):
         svcno=None, 
         ):
         '''资源使用完成
-        '''        
+        ''' 
+        if accno is None or providerno is None or label is None:
+            raise BillingFail()
+
         if start_time is None:
-            start_time = timezone.localtime()
+            start_time = timezone.now()
+        start_time = start_time.astimezone(timezone.utc)
+
+        if finish_time is not None:
+            finish_time = finish_time.astimezone(timezone.utc)
+
         data = {
             'label': label,
             'start_time': start_time.strftime('%Y-%m-%d %H:%M:%S'),
