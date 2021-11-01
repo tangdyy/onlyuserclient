@@ -1,7 +1,7 @@
 from functools import wraps
 from onlyuserclient.handler import get_billapi_handler
 
-class api_charge():
+class apiview_charge():
     '''API计费装饰器类
     '''
     def __init__(self, 

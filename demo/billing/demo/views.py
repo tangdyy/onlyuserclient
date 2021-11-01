@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from onlyuserclient.decorator import api_charge
+from onlyuserclient.decorator import apiview_charge
 
 class Demo1ViewSet(viewsets.ViewSet):
     '''demo1
@@ -22,7 +22,7 @@ class Demo1ViewSet(viewsets.ViewSet):
         url_name='bill-postpay',
         url_path='bill-postpay'
     )
-    @api_charge(
+    @apiview_charge(
         service_key='bill1'
     )
     def bill_postpay(self, request, pk=None):
@@ -31,11 +31,3 @@ class Demo1ViewSet(viewsets.ViewSet):
             'result': 'this is demo1 bill_postpay.'
         }
         return Response(data)
-
-@api_charge(
-    service_key='bill2'
-)
-def fun_list(request):
-    '''函数视图
-    '''
-    return HttpResponse('aaaaaa')

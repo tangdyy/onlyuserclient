@@ -9,5 +9,4 @@ router.register(r'demo1s', Demo1ViewSet, basename='demo1')
 
 urlpatterns = [
     url(r'^', include(router.urls)), 
-    path('fun-list/', fun_list, name='fun-list'), 
 ]

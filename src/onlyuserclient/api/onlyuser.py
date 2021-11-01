@@ -36,7 +36,7 @@ class OrganizationResource(Resource):
     '''
     actions = {
         "retrieve":{'method': 'GET', 'url': '/organizations/{}/'},
-        "billaccount":{'method': 'GET', 'url': '/organizations/{}/billaccount/'}, 
+        "billaccount":{'method': 'GET', 'url': '/organization-trees/{}/billaccount/'}, 
     }
 
 class ApplicationResource(Resource):
@@ -131,7 +131,8 @@ class OnlyuserApi(BaseAPI):
         if CACHE_API:
             result = cache.get(ckey)
             if result:
-                return result        
+                return result 
+
         try:
             response = self.organizations.billaccount(organization_id)
             accno = response.body.get('accno', None)

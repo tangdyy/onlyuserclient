@@ -28,11 +28,11 @@ class BillApiHandler():
         fun_name=None,
         fun_doc=None
         ):
-        self.service_label = service_label, 
+        self.service_label = service_label 
         self.service_name = service_name
-        self.before = before,
-        self.after = after,
-        self.usable = usable,
+        self.before = before
+        self.after = after
+        self.usable = usable
         self.application_service = application_service
         self.fun_name = fun_name
         self.fun_doc = fun_doc
@@ -107,7 +107,7 @@ class BillApiHandler():
         appid= self._get_application_id(request)
         if appid is None:
             return None
-        return onlyuserapi.get_organization_info(appid)
+        return onlyuserapi.get_application_info(appid)
 
     def get_organization_info(self, request):
         '''获取请求对象的组织信息
@@ -151,17 +151,20 @@ class BillApiHandler():
         count = self.get_service_params(request, 'count')
         summary = self.get_service_params(request, 'summary')
         application = self.get_service_params(request, 'application')
-        organization = self.get_service_params(request, 'organization')        
-        svcno, expire = billingapi.request_service(
-            accno,
-            providerno, 
-            label,
-            start_time,
-            count,        
-            summary,
-            application,
-            organization
-        )
+        organization = self.get_service_params(request, 'organization')  
+
+        svcno = None
+        if accno:      
+            svcno, expire = billingapi.request_service(
+                accno,
+                providerno, 
+                label,
+                start_time,
+                count,        
+                summary,
+                application,
+                organization
+            )
         if svcno is None:
             raise exceptions.ServiceForbidden(
                 application,
@@ -203,7 +206,9 @@ class BillApiHandler():
         accno = self.get_service_params(request, 'accno')
         label = self.get_service_params(request, 'label')
         count = self.get_service_params(request, 'count')
-        usable = billingapi.usable_service(accno, label, count)
+        usable = False
+        if accno:
+            usable = billingapi.usable_service(accno, label, count)
         if not usable:
             raise exceptions.ServiceForbidden(
                 self.get_service_params(request, 'application'),
@@ -218,11 +223,13 @@ class BillApiHandler():
         application = self.get_service_params(request, 'application')
         organization = self.get_service_params(request, 'organization')
         user = self.get_service_params(request, 'user')
-        code, detail = onlyuserapi.apply_application(
-            application, 
-            user, 
-            organization
-        )
+        code = -1
+        if application and organization and user:
+            code, detail = onlyuserapi.apply_application(
+                application, 
+                user, 
+                organization
+            )
         setattr(request, '_application_check', True)
         if code != 0:
             raise exceptions.ApplicationForbidden(
@@ -245,7 +252,7 @@ class BillApiHandler():
         self.set_service_params(request, 'start_time', self.get_before_start_time(request))
         self.set_service_params(request, 'label', self.service_label)   
         self.set_service_params(request, 'summary', self.get_summary(request))
-        
+
         if self.application_service and not request._application_check:
             self.apply_application(request)
 
@@ -302,7 +309,7 @@ def get_billapi_handler(
      
     if len(service_item) < 3:
         raise ValueError('settings BILLING.SERVICE_ITEMS key: %s error.'%(service_key,))
-
+    
     service_label = service_item[0]
     service_name = service_item[1] or service_label
     bill_handler_module =  service_item[2]    
@@ -317,7 +324,7 @@ def get_billapi_handler(
             raise ValueError('The service itme handler is not valid value.')
     else:
         bill_handler_cls = BillApiHandler
-    
+
     handler = bill_handler_cls(
         service_label,
         service_name=service_name,
