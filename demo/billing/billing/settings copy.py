@@ -154,9 +154,10 @@ BILLINGCLIENT = {
     # 缓存存活时间(秒)
     'CACHE_TTL': 60,
     # 属于应用服务
-    'APPLICATION_SERVICE': True,
+    'APPLICATION_SERVICE': False,
     # 此项目提供的服务项目列表
     'SERVICE_ITEMS': {
+        'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务', None),
     },
     # 缓存引擎
     'CACHE_ENGINE': 'cache',

@@ -23,7 +23,7 @@ class Demo1ViewSet(viewsets.ViewSet):
         url_path='bill-postpay'
     )
     @apiview_charge(
-        service_key='bill1'
+        service_key='insurance'
     )
     def bill_postpay(self, request, pk=None):
         data = {

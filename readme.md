@@ -1,6 +1,8 @@
 # onlyuserclient
 
-统一认证服务Onlyuser客户端开发包,配合Onlyuser在微服务中实现角色权限控制，包括数据记录和字段权限控制。
+统一认证服务Onlyuser客户端开发包,配合Onlyuser在微服务中实现：    
++ 角色权限控制，包括数据记录和字段权限控制。
++ 计费相关功能
 
 ## 依赖包
 + django >= 2.0.0
@@ -28,15 +30,18 @@ pip install -U onlyuserclient
   
   MIDDLEWARE = [
       '....',
+      # 角色权限中间件
       'onlyuserclient.middlewares.RoleMiddleware',
+      # 计费控制中间件
+      'onlyuserclient.middleware.BillingMiddleware',
   ]  
 
   ```
 + 添加`onlyuserclient`配置    
   ```python   
   ONLYUSERCLIENT ={
-      'API_ROOT_URL': 'http://onlyuser-service.test.svc.cluster.local',
-      'API_TIMEOUT': 30,
+      'API_ROOT_URL': 'http://dev.onlyuser',
+      'API_TIMEOUT': 5,
       'API_HEADERS': {},
       'APIKEY_HEADER': 'apikey',
       'APIKEY': '',    
@@ -58,7 +63,53 @@ pip install -U onlyuserclient
     是否在本地缓存API访问结果，默认是`False`。onlyuserclient是使用Django内建的缓存功能，当你开启此项时，还需要同时配置`settings.py`中的`CACHES`。    
   * CACHE_TTL    
     缓存有效时间，默认`60`秒。
-  
++ 添加计费配配置项 
+  ```python
+  BILLINGCLIENT = {
+      # 计费服务器Restful接口URL
+      'API_ROOT_URL': 'http://dev.billing',
+      # API URL前缀
+      'API_PFX': None,
+      # 计费服务器Restful接口超时(秒)
+      'API_TIMEOUT': 5,
+      # 缓存远程接口
+      'CACHE_API': False,
+      # 缓存存活时间(秒)
+      'CACHE_TTL': 60,
+      # 属于应用服务
+      'APPLICATION_SERVICE': True,
+      # 此项目提供的服务项目列表
+      'SERVICE_ITEMS': {
+          'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务  ', None),
+      },
+      # 缓存引擎
+      'CACHE_ENGINE': 'cache',
+      # 本地模式,如果允许，将不会访问远程服务器
+      'LOCAL': False
+  }
+  ```  
+  * API_ROOT_URL   
+  计费服务器API接口的根URL
+  * API_PFX      
+  URL前缀
+  * API_TIMEOUT        
+  计费服务器Restful接口超时(秒)
+  * CACHE_API     
+  是否缓存远程接口访问数据，默认是`False`。      
+  缓存接口访问数据可以大幅减少接口重复访问，极大提高后端性能，生产环境应当开启。   
+  * CACHE_TTL     
+  接口缓存数据的生命期，默认60秒。     
+  此值大小需要权衡性能和数据更新及时性。   
+  * APPLICATION_SERVICE     
+  属于应用服务
+  # 此项目提供的服务项目列表
+  'SERVICE_ITEMS': {
+      'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务  ', None),
+  },
+  # 缓存引擎
+  'CACHE_ENGINE': 'cache',
+  # 本地模式,如果允许，将不会访问远程服务器
+  'LOCAL': False  
 
 ### 2.确定字段权限控制方案，定义序列化类
 确定要控制字段显示和字段修改权限的场景，并分别定义多个序列化类，每个场景对应一个序列化类，并定义一个标签。     
