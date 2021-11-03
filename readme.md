@@ -37,7 +37,7 @@ pip install -U onlyuserclient
   ]  
 
   ```
-+ 添加`onlyuserclient`配置    
+#### 1.2.添加`onlyuserclient`配置    
   ```python   
   ONLYUSERCLIENT ={
       'API_ROOT_URL': 'http://dev.onlyuser',
@@ -63,7 +63,7 @@ pip install -U onlyuserclient
     是否在本地缓存API访问结果，默认是`False`。onlyuserclient是使用Django内建的缓存功能，当你开启此项时，还需要同时配置`settings.py`中的`CACHES`。    
   * CACHE_TTL    
     缓存有效时间，默认`60`秒。
-#### 1.2.添加计费配配置项 <span id='1.2'></span>
+#### 1.3.添加计费配配置项 <span id='1.3'></span>
   ```python
   BILLINGCLIENT = {
       # 计费服务器Restful接口URL
@@ -258,13 +258,13 @@ GET resources/choices
 ```
 
 ### 6.实现API接口计费方法    
-+ 参照上面[1.2.](#1.2) 配置，并在 `SERVICE_ITEMS` 中添加计费服务项目配置。
++ 参照上面[1.3.](#1.3) 配置，并在 `SERVICE_ITEMS` 中添加计费服务项目配置。
 + 修改需要计费的视图类方法，添加装饰器 `apiview_charge`。    
   ***注意：如有多个装饰器，`apiview_charge` 应当放到最下面。***     
   ```python
   from onlyuserclient.decorator import apiview_charge
   class DemoViewSet(viewsets.ViewSet):
-      # 参见1.2.中说明
+      # 参见1.3.中说明
       application_service=False
 
       @action(
@@ -282,7 +282,7 @@ GET resources/choices
           after=True,
           # 方法调用前的计费检查只检查服务可用否，`before` 是 `True` 时有效
           usable=True,
-          # 参见1.2.中说明
+          # 参见1.3.中说明
           application_service=False
       )
       def bill_postpay(self, request, pk=None):
