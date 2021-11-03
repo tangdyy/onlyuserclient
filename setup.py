@@ -12,7 +12,12 @@ setup(
     url="https://github.com/tangdyy/onlyuserclient",
     author = 'Tang dayong', 
     author_email="tangdyy@126.com",
-    requires=['django', 'djangorestframework'],
+    install_requires=[
+        'django', 
+        'djangorestframework', 
+        "simple-rest-client==1.1.1", 
+        'django-objectid'
+    ],
     package_dir={'': 'src'},
     packages=find_packages('src'),
     classifiers=[
