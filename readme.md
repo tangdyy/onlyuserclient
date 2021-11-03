@@ -24,8 +24,8 @@ pip install -U onlyuserclient
 ## 快速开始
 
 ### 1.修改配置文件`settings.py`   
-添加以下配置项：
-+ 添加中间件`onlyuserclient.middlewares.RoleMiddleware`到配置中
+
+#### 1.1.添加中间件`onlyuserclient.middlewares.RoleMiddleware`到配置中
   ```python
   
   MIDDLEWARE = [
@@ -63,7 +63,7 @@ pip install -U onlyuserclient
     是否在本地缓存API访问结果，默认是`False`。onlyuserclient是使用Django内建的缓存功能，当你开启此项时，还需要同时配置`settings.py`中的`CACHES`。    
   * CACHE_TTL    
     缓存有效时间，默认`60`秒。
-+ 添加计费配配置项 
+#### 1.2.添加计费配配置项 <span id='1.2'></span>
   ```python
   BILLINGCLIENT = {
       # 计费服务器Restful接口URL
@@ -101,15 +101,24 @@ pip install -U onlyuserclient
   接口缓存数据的生命期，默认60秒。     
   此值大小需要权衡性能和数据更新及时性。   
   * APPLICATION_SERVICE     
-  属于应用服务
-  # 此项目提供的服务项目列表
-  'SERVICE_ITEMS': {
+  此项目是否属于应用服务, 默认`False`。    
+  ***属于应用服务*** 是指此项目提供的功能是应用程序的基础服务，计费上将受应用程序类服务项目的控制，比如： ***名单管理*** 是 ***车险营销管理系统*** 的基础功能，不单独计费，***名单管理*** 微服务项目的配置项 `APPLICATION_SERVICE` 应当设为`True`。           
+  在视图类中可以设置类属性 `application_service` 配置视图类是否属于应用服务。           
+  在视图类方法的计费装饰器 `apiview_charge` 的初始化参数中可以设置参数 `application_service`，配置视图类方法是否属于应用服务。      
+  这三个配置项的优先级：     
+  配置项 `APPLICATION_SERVICE` > 类属性 `application_service` >  装饰器 `apiview_charge`参数 `application_service`
+  * SERVICE_ITEMS      
+  此项目提供的服务项目的计费配置，`dict`类型。格式如下： 
+  ```python        
+  {
+      'key': ('计费服务项目的label', '服务项目名称', '计费处理类'),
       'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务  ', None),
-  },
-  # 缓存引擎
-  'CACHE_ENGINE': 'cache',
-  # 本地模式,如果允许，将不会访问远程服务器
-  'LOCAL': False  
+  }
+  ```
+  * CACHE_ENGINE     
+  缓存引擎，django配置项`CACHES`的key值。生产环境建议用数据库、membercache等高性能缓存引擎。      
+  * LOCAL    
+  本地模式，如果允许，将不会访问远程服务器，用于代码编程阶段，不便于链接计费服务器时，默认是`False`。
 
 ### 2.确定字段权限控制方案，定义序列化类
 确定要控制字段显示和字段修改权限的场景，并分别定义多个序列化类，每个场景对应一个序列化类，并定义一个标签。     
@@ -224,7 +233,7 @@ class RoleViewSet(RoleModelViewSet):
   选项字段，在序列化类中定义属性`serializer_choice_field`，值等于`SelecterField`。        
   ``` 
 
-### 4.`ChoicesModelMixin`类    
+### 5.`ChoicesModelMixin`类    
 为模型视图类混入选项字段的选项列表查询方法。  
 ```python
 class ResourceViewSet(RoleModelViewSet, ChoicesModelMixin):
@@ -247,3 +256,39 @@ GET resources/choices
   ]
 }
 ```
+
+### 6.实现API接口计费方法    
++ 参照上面[1.2.](#1.2) 配置，并在 `SERVICE_ITEMS` 中添加计费服务项目配置。
++ 修改需要计费的视图类方法，添加装饰器 `apiview_charge`。    
+  ***注意：如有多个装饰器，`apiview_charge` 应当放到最下面。***     
+  ```python
+  from onlyuserclient.decorator import apiview_charge
+  class DemoViewSet(viewsets.ViewSet):
+      # 参见1.2.中说明
+      application_service=False
+
+      @action(
+          detail=True, 
+          methods=['post'],
+          url_name='bill-postpay',
+          url_path='bill-postpay'
+      )
+      @apiview_charge(
+          # 配置项 `SERVICE_ITEMS` 中的KEY
+          service_key='insurance',
+          # 方法调用前需要计费检查
+          before=True,
+          # 方法调用后需要提交计费结果
+          after=True,
+          # 方法调用前的计费检查只检查服务可用否，`before` 是 `True` 时有效
+          usable=True,
+          # 参见1.2.中说明
+          application_service=False
+      )
+      def bill_postpay(self, request, pk=None):
+          data = {
+              'code': 1,
+              'result': 'this is demo bill_postpay.'
+          }
+          return Response(data)
+  ```
