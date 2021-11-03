@@ -25,13 +25,13 @@ pip install -U onlyuserclient
 
 ### 1.修改配置文件`settings.py`   
 
-#### 1.1.添加中间件`onlyuserclient.middlewares.RoleMiddleware`到配置中
+#### 1.1.添加中间件到配置中
   ```python
   
   MIDDLEWARE = [
       '....',
       # 角色权限中间件
-      'onlyuserclient.middlewares.RoleMiddleware',
+      'onlyuserclient.middleware.RoleMiddleware',
       # 计费控制中间件
       'onlyuserclient.middleware.BillingMiddleware',
   ]  
