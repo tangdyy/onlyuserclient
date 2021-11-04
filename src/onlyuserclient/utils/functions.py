@@ -9,14 +9,18 @@ from django.core.cache import caches, cache
 
 
 def get_bill_cache():
-    if billing_settings.CACHE_ENGINE in caches:
-        return caches[billing_settings.CACHE_ENGINE]
-    return cache
+    try:
+        ch = caches[billing_settings.CACHE_ENGINE]
+    except:
+        ch = cache
+    return ch
     
 def get_onlyuser_cache():
-    if onlyuser_settings.CACHE_ENGINE in caches:
-        return caches[onlyuser_settings.CACHE_ENGINE]
-    return cache
+    try:
+        ch = caches[onlyuser_settings.CACHE_ENGINE]
+    except:
+        ch = cache
+    return ch
 
 def generate_cache_key(pfx, *args, **kwargs):
     keystr = ''
