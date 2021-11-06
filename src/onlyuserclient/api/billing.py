@@ -250,5 +250,6 @@ billingapi = BillingApi(
     pfx=billing_settings.API_PFX,
     headers=billing_settings.API_HEADERS,
     timeout=billing_settings.API_TIMEOUT,
+    apikey_header=billing_settings.APIKEY_HEADER,
     apikey=billing_settings.APIKEY    
 )
