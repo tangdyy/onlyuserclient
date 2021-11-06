@@ -5,7 +5,7 @@ with open("readme.md", "r", encoding='utf8') as fh:
 
 setup(
     name = 'onlyuserclient',
-    version = '1.1.0.dev2',
+    version = '1.1.0.dev4',
     description = 'onlyuser client',
     long_description=long_description,
     long_description_content_type="text/markdown",
