@@ -137,6 +137,7 @@ REST_FRAMEWORK = {
 
 
 ONLYUSERCLIENT = {
+    'CACHE_ENGINE': 'default',
     'API_ROOT_URL': 'http://127.0.0.1:8000',
     'CACHE_API': True,
     'LOCAL': False
@@ -161,7 +162,7 @@ BILLINGCLIENT = {
     'SERVICE_ITEMS': {
     },
     # 缓存引擎
-    'CACHE_ENGINE': 'cache',
+    'CACHE_ENGINE': 'default',
     # 本地模式,如果允许，将不会访问远程服务器
     'LOCAL': False
 }

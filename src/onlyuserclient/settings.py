@@ -15,7 +15,7 @@ default_settings = {
     'APIKEY': None,
     'CACHE_API': False,
     'CACHE_TTL': 60,
-    'CACHE_ENGINE': 'cache',
+    'CACHE_ENGINE': 'default',
     'HAS_ROLE': True,
     # 本地模式,如果允许，将不会访问远程服务器
     'LOCAL': False,        
@@ -54,7 +54,7 @@ billing_default_settings = {
     # 此项目提供的服务项目列表
     'SERVICE_ITEMS': {},
     # 缓存引擎
-    'CACHE_ENGINE': 'cache',
+    'CACHE_ENGINE': 'default',
     # 本地模式,如果允许，将不会访问远程服务器
     'LOCAL': False,    
 }
