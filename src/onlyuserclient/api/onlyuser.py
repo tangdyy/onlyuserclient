@@ -4,13 +4,13 @@ from simple_rest_client.exceptions import ClientError
 from onlyuserclient import exceptions
 from onlyuserclient.utils import functions
 from .base import BaseAPI
-from onlyuserclient.settings import api_settings
+from onlyuserclient.settings import api_settings, onlyuser_settings
 
 __all__ =('onlyuserapi',)
 
 logger = logging.getLogger('onlyuserclient.api.onlyuser')
-CACHE_API  = api_settings.CACHE_API
-CACHE_TTL = api_settings.CACHE_TTL or 60
+CACHE_API  = onlyuser_settings.CACHE_API
+CACHE_TTL = onlyuser_settings.CACHE_TTL or 60
 cache = functions.get_onlyuser_cache()
 
 
@@ -76,7 +76,7 @@ class OnlyuserApi(BaseAPI):
                 application, user, organization
             )
         )
-        if api_settings.LOCAL:
+        if onlyuser_settings.LOCAL:
             logger.warning('Onlyuser api is local mode.')
             return 0, 'this local mode.'
         
@@ -250,4 +250,11 @@ class OnlyuserApi(BaseAPI):
         return data
 
 
-onlyuserapi = OnlyuserApi(pfx=api_settings.ONLYUSER_PFX)
+onlyuserapi = OnlyuserApi(
+    api_root_url=onlyuser_settings.API_ROOT_URL,
+    pfx=onlyuser_settings.ONLYUSER_PFX,
+    headers=onlyuser_settings.API_HEADERS,
+    timeout=onlyuser_settings.API_TIMEOUT,
+    apikey_header=onlyuser_settings.APIKEY_HEADER,
+    apikey=onlyuser_settings.APIKEY   
+)
