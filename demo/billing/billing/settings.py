@@ -164,7 +164,7 @@ ONLYUSERCLIENT = {
     'CACHE_ENGINE': 'default',
     'API_ROOT_URL': 'https://test.cdqidian.net/onlyuser',
     'APIKEY': 'BJgCJlsZmr3qK5eVisoK0Jw6gQKrzPAa',
-    'CACHE_API': False,
+    'CACHE_API': True,
     'LOCAL': False
 }
 
@@ -178,13 +178,14 @@ BILLINGCLIENT = {
     # KEY-AUTH key
     'APIKEY': 'b7Goa8W1kGJBxG8Cbhz5SckM3xl9gdbZ',
     # 缓存远程接口
-    'CACHE_API': False,
+    'CACHE_API': True,
     # 缓存存活时间(秒)
     'CACHE_TTL': 60,
     # 属于应用服务
     'APPLICATION_SERVICE': False,
     # 此项目提供的服务项目列表
     'SERVICE_ITEMS': {
+        'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务', None),
     },
     # 缓存引擎
     'CACHE_ENGINE': 'default',

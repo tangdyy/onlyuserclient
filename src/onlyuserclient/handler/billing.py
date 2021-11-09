@@ -177,6 +177,8 @@ class BillApiHandler():
     def finish_service(self, request, response):
         '''结束服务计费
         '''
+        if response.status_code < 200 or response.status_code >= 300:
+            return
         accno = self.get_service_params(request, 'accno')
         providerno = self.get_service_params(request, 'providerno')
         label = self.get_service_params(request, 'label')

@@ -11,6 +11,7 @@ class apiview_charge():
         usable=True,
         application_service=False
         ):
+        usable=True
         self.bill_handler = get_billapi_handler(
             service_key, 
             before,
