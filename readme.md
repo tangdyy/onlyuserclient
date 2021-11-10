@@ -292,3 +292,17 @@ GET resources/choices
           }
           return Response(data)
   ```
+
+## API 参考
+### `onlyuserclient.api.onlyuserapi` 实例对象
+`onlyuserapi` 是 `simple_rest_client.api.API` 的实例对象，将一系列 onlyuser api 接口封装为实例方法。   
++ `onlyuserapi.apply_application(application, user, organization=None)`    
+属于计费类接口方法，检查用户是否可以访问应用程序。即：用户或用户所在组织关联的计费账号开通了相关应用程序服务项目，项目在启用状态，计费账户状态符合条件。    
+参数：       
+  * `application`     
+  应用程序ID     
+  * `user`     
+  登录用户ID      
+  * `organization`    
+  当前组织ID           
+返回值：            
