@@ -296,13 +296,57 @@ GET resources/choices
 ## API 参考
 ### `onlyuserclient.api.onlyuserapi` 实例对象
 `onlyuserapi` 是 `simple_rest_client.api.API` 的实例对象，将一系列 onlyuser api 接口封装为实例方法。   
-+ `onlyuserapi.apply_application(application, user, organization=None)`    
-属于计费类接口方法，检查用户是否可以访问应用程序。即：用户或用户所在组织关联的计费账号开通了相关应用程序服务项目，项目在启用状态，计费账户状态符合条件。    
-参数：       
+#### 1. `onlyuserapi.apply_application(application, user, organization=None)`    
+计费相关接口方法，检查用户是否可以访问应用程序。即：用户或用户所在组织关联的计费账号开通了相关应用程序服务项目，项目在启用状态，计费账户状态符合条件。      
+
+>参数：       
   * `application`     
   应用程序ID     
   * `user`     
   登录用户ID      
   * `organization`    
-  当前组织ID           
-返回值：            
+  当前组织ID      
+>返回值：            
+  `(code, detail)`   
+  `code` 数值类型，是 0 表示可以使用，其他值不允许使用；`detail` 字符串，结果的详细说明。                   
+#### 2. `onlyuserclient.get_organization_billaccount(organization_id)`
+计费相关接口方法，查询组织绑定的计费账号     
+> 参数：    
+  * `organization_id`    
+  组织机构的ID          
+> 返回值：            
+  计费账号，字符串 或 `None`。                   
+#### 3. `onlyuserclient.get_application_info(application_id)`           
+查询应用程序的详细信息             
+> 参数：    
+  * `application_id`    
+  应用程序的ID          
+> 返回值：            
+  应用程序信息详细信息，`dict` 或 `None`。                  
+#### 4. `onlyuserclient.get_organization_info(organization_id)`           
+查询组织的详细信息             
+> 参数：    
+  * `organization_id`    
+  组织的ID          
+> 返回值：            
+  组织的详细信息，`dict` 或 `None`。              
+#### 5. `onlyuserclient.get_user_info(user_id)`            
+查询用户的详细信息             
+> 参数：    
+  * `user_id`    
+  用户的ID          
+> 返回值：            
+  用户的详细信息，`dict` 或 `None`。               
+
+### `onlyuserclient.api.billingapi` 实例对象
+`billingapi` 是 `simple_rest_client.api.API` 的实例对象，将一系列 wellbill api 接口封装为实例方法。             
+#### 1. `billingapi.get_account_by_user(userid)`    
+检查用户的计费账号。  
+
+>参数：       
+  * `userid`     
+  登录用户ID      
+>返回值：            
+  计费账号，字符串。
+>异常：
+  计费账号不存在时，产生异常：`onlyuserclient.api.billing.BillAccountNotExist`。
