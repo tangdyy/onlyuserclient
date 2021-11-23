@@ -1,6 +1,8 @@
 # onlyuserclient
 
-统一认证服务Onlyuser客户端开发包,配合Onlyuser在微服务中实现角色权限控制，包括数据记录和字段权限控制。
+统一认证服务Onlyuser客户端开发包,配合Onlyuser在微服务中实现：    
++ 角色权限控制，包括数据记录和字段权限控制。
++ 计费相关功能
 
 ## 依赖包
 + django >= 2.0.0
@@ -22,21 +24,24 @@ pip install -U onlyuserclient
 ## 快速开始
 
 ### 1.修改配置文件`settings.py`   
-添加以下配置项：
-+ 添加中间件`onlyuserclient.middlewares.RoleMiddleware`到配置中
+
+#### 1.1.添加中间件到配置中
   ```python
   
   MIDDLEWARE = [
       '....',
-      'onlyuserclient.middlewares.RoleMiddleware',
+      # 角色权限中间件
+      'onlyuserclient.middleware.RoleMiddleware',
+      # 计费控制中间件
+      'onlyuserclient.middleware.BillingMiddleware',
   ]  
 
   ```
-+ 添加`onlyuserclient`配置    
+#### 1.2.添加`onlyuserclient`配置    
   ```python   
   ONLYUSERCLIENT ={
-      'API_ROOT_URL': 'http://onlyuser-service.test.svc.cluster.local',
-      'API_TIMEOUT': 30,
+      'API_ROOT_URL': 'http://dev.onlyuser',
+      'API_TIMEOUT': 5,
       'API_HEADERS': {},
       'APIKEY_HEADER': 'apikey',
       'APIKEY': '',    
@@ -58,7 +63,62 @@ pip install -U onlyuserclient
     是否在本地缓存API访问结果，默认是`False`。onlyuserclient是使用Django内建的缓存功能，当你开启此项时，还需要同时配置`settings.py`中的`CACHES`。    
   * CACHE_TTL    
     缓存有效时间，默认`60`秒。
-  
+#### 1.3.添加计费配配置项 <span id='1.3'></span>
+  ```python
+  BILLINGCLIENT = {
+      # 计费服务器Restful接口URL
+      'API_ROOT_URL': 'http://dev.billing',
+      # API URL前缀
+      'API_PFX': None,
+      # 计费服务器Restful接口超时(秒)
+      'API_TIMEOUT': 5,
+      # 缓存远程接口
+      'CACHE_API': False,
+      # 缓存存活时间(秒)
+      'CACHE_TTL': 60,
+      # 属于应用服务
+      'APPLICATION_SERVICE': True,
+      # 此项目提供的服务项目列表
+      'SERVICE_ITEMS': {
+          'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务  ', None),
+      },
+      # 缓存引擎
+      'CACHE_ENGINE': 'cache',
+      # 本地模式,如果允许，将不会访问远程服务器
+      'LOCAL': False
+  }
+  ```  
+  * API_ROOT_URL   
+  计费服务器API接口的根URL
+  * API_PFX      
+  URL前缀
+  * API_TIMEOUT        
+  计费服务器Restful接口超时(秒)
+  * CACHE_API     
+  是否缓存远程接口访问数据，默认是`False`。      
+  缓存接口访问数据可以大幅减少接口重复访问，极大提高后端性能，生产环境应当开启。   
+  * CACHE_TTL     
+  接口缓存数据的生命期，默认60秒。     
+  此值大小需要权衡性能和数据更新及时性。   
+  * APPLICATION_SERVICE     
+  此项目是否属于应用服务, 默认`False`。    
+  ***属于应用服务*** 是指此项目提供的功能是应用程序的基础服务，计费上将受应用程序类服务项目的控制，比如： ***名单管理*** 是 ***车险营销管理系统*** 的基础功能，不单独计费，***名单管理*** 微服务项目的配置项 `APPLICATION_SERVICE` 应当设为`True`。           
+  在视图类中可以设置类属性 `application_service` 配置视图类是否属于应用服务。           
+  在视图类方法的计费装饰器 `apiview_charge` 的初始化参数中可以设置参数 `application_service`，配置视图类方法是否属于应用服务。      
+  这三个配置项的优先级：     
+  配置项 `APPLICATION_SERVICE` > 类属性 `application_service` >  装饰器 `apiview_charge`参数 `application_service`
+  * SERVICE_ITEMS      
+  此项目提供的服务项目的计费配置，`dict`类型。格式如下： 
+  ```python        
+  {
+      'key': ('计费服务项目的label', '服务项目名称', '计费处理类'),
+      'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务  ', None),
+  }
+  ```
+  * CACHE_ENGINE     
+  缓存引擎，django配置项`CACHES`的key值。生产环境建议用数据库、membercache等高性能缓存引擎。      
+  * LOCAL    
+  本地模式，如果允许，将不会访问远程服务器，用于代码编程阶段，不便于链接计费服务器时，默认是`False`。
 
 ### 2.确定字段权限控制方案，定义序列化类
 确定要控制字段显示和字段修改权限的场景，并分别定义多个序列化类，每个场景对应一个序列化类，并定义一个标签。     
@@ -173,7 +233,7 @@ class RoleViewSet(RoleModelViewSet):
   选项字段，在序列化类中定义属性`serializer_choice_field`，值等于`SelecterField`。        
   ``` 
 
-### 4.`ChoicesModelMixin`类    
+### 5.`ChoicesModelMixin`类    
 为模型视图类混入选项字段的选项列表查询方法。  
 ```python
 class ResourceViewSet(RoleModelViewSet, ChoicesModelMixin):
@@ -196,3 +256,97 @@ GET resources/choices
   ]
 }
 ```
+
+### 6.实现API接口计费方法    
++ 参照上面[1.3.](#1.3) 配置，并在 `SERVICE_ITEMS` 中添加计费服务项目配置。
++ 修改需要计费的视图类方法，添加装饰器 `apiview_charge`。    
+  ***注意：如有多个装饰器，`apiview_charge` 应当放到最下面。***     
+  ```python
+  from onlyuserclient.decorator import apiview_charge
+  class DemoViewSet(viewsets.ViewSet):
+      # 参见1.3.中说明
+      application_service=False
+
+      @action(
+          detail=True, 
+          methods=['post'],
+          url_name='bill-postpay',
+          url_path='bill-postpay'
+      )
+      @apiview_charge(
+          # 配置项 `SERVICE_ITEMS` 中的KEY
+          service_key='insurance',
+          # 方法调用前需要计费检查
+          before=True,
+          # 方法调用后需要提交计费结果
+          after=True,
+          # 方法调用前的计费检查只检查服务可用否，`before` 是 `True` 时有效
+          usable=True,
+          # 参见1.3.中说明
+          application_service=False
+      )
+      def bill_postpay(self, request, pk=None):
+          data = {
+              'code': 1,
+              'result': 'this is demo bill_postpay.'
+          }
+          return Response(data)
+  ```
+
+## API 参考
+### `onlyuserclient.api.onlyuserapi` 实例对象
+`onlyuserapi` 是 `simple_rest_client.api.API` 的实例对象，将一系列 onlyuser api 接口封装为实例方法。   
+#### 1. `onlyuserapi.apply_application(application, user, organization=None)`    
+计费相关接口方法，检查用户是否可以访问应用程序。即：用户或用户所在组织关联的计费账号开通了相关应用程序服务项目，项目在启用状态，计费账户状态符合条件。      
+
+>参数：       
+  * `application`     
+  应用程序ID     
+  * `user`     
+  登录用户ID      
+  * `organization`    
+  当前组织ID      
+>返回值：            
+  `(code, detail)`   
+  `code` 数值类型，是 0 表示可以使用，其他值不允许使用；`detail` 字符串，结果的详细说明。                   
+#### 2. `onlyuserclient.get_organization_billaccount(organization_id)`
+计费相关接口方法，查询组织绑定的计费账号     
+> 参数：    
+  * `organization_id`    
+  组织机构的ID          
+> 返回值：            
+  计费账号，字符串 或 `None`。                   
+#### 3. `onlyuserclient.get_application_info(application_id)`           
+查询应用程序的详细信息             
+> 参数：    
+  * `application_id`    
+  应用程序的ID          
+> 返回值：            
+  应用程序信息详细信息，`dict` 或 `None`。                  
+#### 4. `onlyuserclient.get_organization_info(organization_id)`           
+查询组织的详细信息             
+> 参数：    
+  * `organization_id`    
+  组织的ID          
+> 返回值：            
+  组织的详细信息，`dict` 或 `None`。              
+#### 5. `onlyuserclient.get_user_info(user_id)`            
+查询用户的详细信息             
+> 参数：    
+  * `user_id`    
+  用户的ID          
+> 返回值：            
+  用户的详细信息，`dict` 或 `None`。               
+
+### `onlyuserclient.api.billingapi` 实例对象
+`billingapi` 是 `simple_rest_client.api.API` 的实例对象，将一系列 wellbill api 接口封装为实例方法。             
+#### 1. `billingapi.get_account_by_user(userid)`    
+检查用户的计费账号。  
+
+>参数：       
+  * `userid`     
+  登录用户ID      
+>返回值：            
+  计费账号，字符串。
+>异常：
+  计费账号不存在时，产生异常：`onlyuserclient.api.billing.BillAccountNotExist`。
