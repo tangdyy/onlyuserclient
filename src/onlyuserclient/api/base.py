@@ -17,8 +17,10 @@ class BaseAPI(API):
         timeout = kwargs.pop('timeout',api_settings.API_TIMEOUT) or DEFAULT_API_TIMEOUT
         json_encode_body = kwargs.pop('json_encode_body ', True)
         append_slash = kwargs.pop('append_slash ', True)
-        if api_settings.APIKEY:
-            headers[api_settings.APIKEY_HEADER] = api_settings.APIKEY
+        apikey_header = kwargs.pop('apikey_header', 'apikey')
+        apikey = kwargs.pop('apikey', None)
+        if apikey:
+            headers[apikey_header] = apikey
             
         super().__init__(
             api_root_url=url,

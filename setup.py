@@ -5,14 +5,19 @@ with open("readme.md", "r", encoding='utf8') as fh:
 
 setup(
     name = 'onlyuserclient',
-    version = '1.0.10',
+    version = '1.1.0',
     description = 'onlyuser client',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/tangdyy/onlyuserclient",
     author = 'Tang dayong', 
     author_email="tangdyy@126.com",
-    requires=['django', 'djangorestframework'],
+    install_requires=[
+        'django', 
+        'djangorestframework', 
+        "simple-rest-client==1.1.1", 
+        'django-objectid'
+    ],
     package_dir={'': 'src'},
     packages=find_packages('src'),
     classifiers=[
