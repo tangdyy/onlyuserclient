@@ -134,3 +134,61 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [],
     'UNAUTHENTICATED_USER': None,
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },    
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
+ONLYUSERCLIENT = {
+    'CACHE_ENGINE': 'default',
+    'API_ROOT_URL': 'https://test.cdqidian.net/onlyuser',
+    'APIKEY': 'BJgCJlsZmr3qK5eVisoK0Jw6gQKrzPAa',
+    'CACHE_API': True,
+    'LOCAL': False
+}
+
+BILLINGCLIENT = {
+    # 计费服务器Restful接口URL
+    'API_ROOT_URL': 'https://billing-dev.cdqidian.net',
+    # API URL前缀
+    'API_PFX': None,
+    # 计费服务器Restful接口超时(秒)
+    'API_TIMEOUT': 5,
+    # KEY-AUTH key
+    'APIKEY': 'b7Goa8W1kGJBxG8Cbhz5SckM3xl9gdbZ',
+    # 缓存远程接口
+    'CACHE_API': True,
+    # 缓存存活时间(秒)
+    'CACHE_TTL': 60,
+    # 属于应用服务
+    'APPLICATION_SERVICE': False,
+    # 此项目提供的服务项目列表
+    'SERVICE_ITEMS': {
+        'insurance': ('b6b962b2-198d-490d-bab1-14765212bbbe', '汽车保险算价服务', None),
+    },
+    # 缓存引擎
+    'CACHE_ENGINE': 'default',
+    # 本地模式,如果允许，将不会访问远程服务器
+    'LOCAL': False
+}
