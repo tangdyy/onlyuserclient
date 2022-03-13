@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcounter.proto\x12\x07\x63ounter\"A\n\x14\x43reateAccountRequest\x12\r\n\x05owner\x18\x01 \x01(\t\x12\x0c\n\x04kind\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\"{\n\x0f\x41\x63\x63ountResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x61\x63\x63no\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x04 \x01(\t\x12\x0e\n\x06\x63redit\x18\x05 \x01(\t\x12\x0f\n\x07warning\x18\x06 \x01(\t\x12\r\n\x05state\x18\x07 \x01(\t\"T\n\x13QueryAccountRequest\x12\x0e\n\x06userid\x18\x01 \x01(\t\x12\x15\n\rapplicationid\x18\x02 \x01(\t\x12\x16\n\x0eorganizationid\x18\x03 \x01(\t\"C\n\x14UsableServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\"6\n\x15UsableServiceResponse\x12\r\n\x05svcno\x18\x01 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x02 \x01(\t\"\xc6\x01\n\x13StartServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nstart_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x12\n\nproviderno\x18\x05 \x01(\t\x12\x0f\n\x07summary\x18\x06 \x01(\t\x12\x13\n\x0b\x61pplication\x18\x07 \x01(\t\x12\x14\n\x0corganization\x18\x08 \x01(\t\x12\x0e\n\x06\x65xpire\x18\t \x01(\t\x12\x0e\n\x06usable\x18\n \x01(\x08\"\xc8\x01\n\x11\x45ndServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t\x12\r\n\x05label\x18\x03 \x01(\t\x12\x12\n\nstart_time\x18\x04 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x05 \x01(\t\x12\r\n\x05\x63ount\x18\x06 \x01(\x05\x12\x12\n\nproviderno\x18\x07 \x01(\t\x12\x0f\n\x07summary\x18\x08 \x01(\t\x12\x13\n\x0b\x61pplication\x18\t \x01(\t\x12\x14\n\x0corganization\x18\n \x01(\t\"i\n\x12\x45ndServiceResponse\x12\r\n\x05svcno\x18\x01 \x01(\t\x12\x12\n\nstart_time\x18\x02 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x05 \x01(\x05\"M\n\x0fResourceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\x12\r\n\x05total\x18\x04 \x01(\x05\"1\n\x10ResourceResponse\x12\r\n\x05usage\x18\x01 \x01(\x05\x12\x0e\n\x06limits\x18\x02 \x01(\x05\"V\n\x12KeepServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nproviderno\x18\x03 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x04 \x01(\t\"4\n\x13KeepServiceResponse\x12\x0e\n\x06\x65xpire\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t2\xf1\x04\n\x0e\x43ounterService\x12J\n\rCreateAccount\x12\x1d.counter.CreateAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12H\n\x0cQueryAccount\x12\x1c.counter.QueryAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12P\n\rUsableService\x12\x1d.counter.UsableServiceRequest\x1a\x1e.counter.UsableServiceResponse\"\x00\x12N\n\x0cStartService\x12\x1c.counter.StartServiceRequest\x1a\x1e.counter.UsableServiceResponse\"\x00\x12G\n\nEndService\x12\x1a.counter.EndServiceRequest\x1a\x1b.counter.EndServiceResponse\"\x00\x12I\n\x10IncreaseResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12G\n\x0eReduceResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12J\n\x0bKeepService\x12\x1b.counter.KeepServiceRequest\x1a\x1c.counter.KeepServiceResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcounter.proto\x12\x07\x63ounter\"\x85\x01\n\x14\x43reateAccountRequest\x12\r\n\x05owner\x18\x01 \x01(\t\x12\x34\n\x04kind\x18\x02 \x01(\x0e\x32&.counter.CreateAccountRequest.KindType\x12\x0c\n\x04name\x18\x03 \x01(\t\"\x1a\n\x08KindType\x12\x06\n\x02PS\x10\x00\x12\x06\n\x02\x43O\x10\x01\"\xc8\x01\n\x0f\x41\x63\x63ountResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x61\x63\x63no\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x04 \x01(\t\x12\x0e\n\x06\x63redit\x18\x05 \x01(\t\x12\x0f\n\x07warning\x18\x06 \x01(\t\x12\r\n\x05state\x18\x07 \x01(\t\x12/\n\x04kind\x18\x08 \x01(\x0e\x32!.counter.AccountResponse.KindType\"\x1a\n\x08KindType\x12\x06\n\x02PS\x10\x00\x12\x06\n\x02\x43O\x10\x01\"T\n\x13QueryAccountRequest\x12\x0e\n\x06userid\x18\x01 \x01(\t\x12\x15\n\rapplicationid\x18\x02 \x01(\t\x12\x16\n\x0eorganizationid\x18\x03 \x01(\t\"C\n\x14UsableServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\"6\n\x15UsableServiceResponse\x12\r\n\x05svcno\x18\x01 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x02 \x01(\t\"\xc6\x01\n\x13StartServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nstart_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x12\n\nproviderno\x18\x05 \x01(\t\x12\x0f\n\x07summary\x18\x06 \x01(\t\x12\x13\n\x0b\x61pplication\x18\x07 \x01(\t\x12\x14\n\x0corganization\x18\x08 \x01(\t\x12\x0e\n\x06\x65xpire\x18\t \x01(\t\x12\x0e\n\x06usable\x18\n \x01(\x08\"\xc8\x01\n\x11\x45ndServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t\x12\r\n\x05label\x18\x03 \x01(\t\x12\x12\n\nstart_time\x18\x04 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x05 \x01(\t\x12\r\n\x05\x63ount\x18\x06 \x01(\x05\x12\x12\n\nproviderno\x18\x07 \x01(\t\x12\x0f\n\x07summary\x18\x08 \x01(\t\x12\x13\n\x0b\x61pplication\x18\t \x01(\t\x12\x14\n\x0corganization\x18\n \x01(\t\"i\n\x12\x45ndServiceResponse\x12\r\n\x05svcno\x18\x01 \x01(\t\x12\x12\n\nstart_time\x18\x02 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x05 \x01(\x05\"M\n\x0fResourceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\x12\r\n\x05total\x18\x04 \x01(\x05\"1\n\x10ResourceResponse\x12\r\n\x05usage\x18\x01 \x01(\x05\x12\x0e\n\x06limits\x18\x02 \x01(\x05\"V\n\x12KeepServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nproviderno\x18\x03 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x04 \x01(\t\"4\n\x13KeepServiceResponse\x12\x0e\n\x06\x65xpire\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t2\xf1\x04\n\x0e\x43ounterService\x12J\n\rCreateAccount\x12\x1d.counter.CreateAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12H\n\x0cQueryAccount\x12\x1c.counter.QueryAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12P\n\rUsableService\x12\x1d.counter.UsableServiceRequest\x1a\x1e.counter.UsableServiceResponse\"\x00\x12N\n\x0cStartService\x12\x1c.counter.StartServiceRequest\x1a\x1e.counter.UsableServiceResponse\"\x00\x12G\n\nEndService\x12\x1a.counter.EndServiceRequest\x1a\x1b.counter.EndServiceResponse\"\x00\x12I\n\x10IncreaseResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12G\n\x0eReduceResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12J\n\x0bKeepService\x12\x1b.counter.KeepServiceRequest\x1a\x1c.counter.KeepServiceResponse\"\x00\x62\x06proto3')
 
 
 
@@ -30,6 +30,8 @@ _RESOURCEREQUEST = DESCRIPTOR.message_types_by_name['ResourceRequest']
 _RESOURCERESPONSE = DESCRIPTOR.message_types_by_name['ResourceResponse']
 _KEEPSERVICEREQUEST = DESCRIPTOR.message_types_by_name['KeepServiceRequest']
 _KEEPSERVICERESPONSE = DESCRIPTOR.message_types_by_name['KeepServiceResponse']
+_CREATEACCOUNTREQUEST_KINDTYPE = _CREATEACCOUNTREQUEST.enum_types_by_name['KindType']
+_ACCOUNTRESPONSE_KINDTYPE = _ACCOUNTRESPONSE.enum_types_by_name['KindType']
 CreateAccountRequest = _reflection.GeneratedProtocolMessageType('CreateAccountRequest', (_message.Message,), {
   'DESCRIPTOR' : _CREATEACCOUNTREQUEST,
   '__module__' : 'counter_pb2'
@@ -118,30 +120,34 @@ _COUNTERSERVICE = DESCRIPTOR.services_by_name['CounterService']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _CREATEACCOUNTREQUEST._serialized_start=26
-  _CREATEACCOUNTREQUEST._serialized_end=91
-  _ACCOUNTRESPONSE._serialized_start=93
-  _ACCOUNTRESPONSE._serialized_end=216
-  _QUERYACCOUNTREQUEST._serialized_start=218
-  _QUERYACCOUNTREQUEST._serialized_end=302
-  _USABLESERVICEREQUEST._serialized_start=304
-  _USABLESERVICEREQUEST._serialized_end=371
-  _USABLESERVICERESPONSE._serialized_start=373
-  _USABLESERVICERESPONSE._serialized_end=427
-  _STARTSERVICEREQUEST._serialized_start=430
-  _STARTSERVICEREQUEST._serialized_end=628
-  _ENDSERVICEREQUEST._serialized_start=631
-  _ENDSERVICEREQUEST._serialized_end=831
-  _ENDSERVICERESPONSE._serialized_start=833
-  _ENDSERVICERESPONSE._serialized_end=938
-  _RESOURCEREQUEST._serialized_start=940
-  _RESOURCEREQUEST._serialized_end=1017
-  _RESOURCERESPONSE._serialized_start=1019
-  _RESOURCERESPONSE._serialized_end=1068
-  _KEEPSERVICEREQUEST._serialized_start=1070
-  _KEEPSERVICEREQUEST._serialized_end=1156
-  _KEEPSERVICERESPONSE._serialized_start=1158
-  _KEEPSERVICERESPONSE._serialized_end=1210
-  _COUNTERSERVICE._serialized_start=1213
-  _COUNTERSERVICE._serialized_end=1838
+  _CREATEACCOUNTREQUEST._serialized_start=27
+  _CREATEACCOUNTREQUEST._serialized_end=160
+  _CREATEACCOUNTREQUEST_KINDTYPE._serialized_start=134
+  _CREATEACCOUNTREQUEST_KINDTYPE._serialized_end=160
+  _ACCOUNTRESPONSE._serialized_start=163
+  _ACCOUNTRESPONSE._serialized_end=363
+  _ACCOUNTRESPONSE_KINDTYPE._serialized_start=134
+  _ACCOUNTRESPONSE_KINDTYPE._serialized_end=160
+  _QUERYACCOUNTREQUEST._serialized_start=365
+  _QUERYACCOUNTREQUEST._serialized_end=449
+  _USABLESERVICEREQUEST._serialized_start=451
+  _USABLESERVICEREQUEST._serialized_end=518
+  _USABLESERVICERESPONSE._serialized_start=520
+  _USABLESERVICERESPONSE._serialized_end=574
+  _STARTSERVICEREQUEST._serialized_start=577
+  _STARTSERVICEREQUEST._serialized_end=775
+  _ENDSERVICEREQUEST._serialized_start=778
+  _ENDSERVICEREQUEST._serialized_end=978
+  _ENDSERVICERESPONSE._serialized_start=980
+  _ENDSERVICERESPONSE._serialized_end=1085
+  _RESOURCEREQUEST._serialized_start=1087
+  _RESOURCEREQUEST._serialized_end=1164
+  _RESOURCERESPONSE._serialized_start=1166
+  _RESOURCERESPONSE._serialized_end=1215
+  _KEEPSERVICEREQUEST._serialized_start=1217
+  _KEEPSERVICEREQUEST._serialized_end=1303
+  _KEEPSERVICERESPONSE._serialized_start=1305
+  _KEEPSERVICERESPONSE._serialized_end=1357
+  _COUNTERSERVICE._serialized_start=1360
+  _COUNTERSERVICE._serialized_end=1985
 # @@protoc_insertion_point(module_scope)
