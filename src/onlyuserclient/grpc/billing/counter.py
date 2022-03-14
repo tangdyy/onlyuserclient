@@ -37,7 +37,12 @@ class CounterClient():
         channel = grpc.insecure_channel(addr)
         self._stub = counter_pb2_grpc.CounterServiceStub(channel)
 
-    def create_account(self, owner, kind, name):
+    def create_account(
+        self, 
+        owner, 
+        kind, 
+        name
+        ):
         """创建计费帐户
 
         Args:
@@ -51,16 +56,95 @@ class CounterClient():
             kind=kind,
             name=name
         )
-        response = None
-        reconnect_count=self._max_reconnect
-        while True:
-            try:
-                response = self._stub.CreateAccount(request)
-            except grpc.RpcError as exec:
-                if exec.code() != grpc.StatusCode.UNAVAILABLE:
-                    raise exec
-            if reconnect_count <= 0:
-                break
-            reconnect_count -= 1
-            print('reconnect')
-        return response
+        return self._stub.CreateAccount(request)
+
+    def query_account(
+        self, 
+        userid=None, 
+        applicationid=None, 
+        organizationid=None
+        ):
+        """查询计费帐户
+
+        Args:
+            userid (string, optional): 用户ID. 默认 None.
+            applicationid (string, optional): 应用ID. 默认 None.
+            organizationid (string, optional): 组织ID. 默认 None.
+        """        
+        assert userid or (applicationid and organizationid)
+        request = counter_pb2.QueryAccountRequest(
+            userid=userid,
+            applicationid=applicationid,
+            organizationid=organizationid
+        )
+        return self._stub.QueryAccount(request)
+
+    def usable_service(
+        self, 
+        accno, 
+        label, 
+        count=1
+        ):
+        """检查服务可用
+
+        Args:
+            accno (string): 计费帐号
+            label (string): 服务项目标签
+            count (int, optional): 数量. 默认值 1.
+        """      
+
+    def start_service(
+        self, 
+        accno,
+        label,        
+        providerno,
+        start_time=None,
+        count=1,
+        summary=None,
+        application=None,
+        organization=None,
+        expire=None,
+        usable=False
+        ):
+        """开始服务计费
+
+        Args:
+            accno (string): 计费帐号
+            label (string): 服务项目标签
+            providerno (string): 服务方序列号
+            start_time (string, optional): 服务开始时间. 默认值 None.
+            count (int, optional): 数量. 默认值 1.
+            summary (string, optional): 摘要. 默认值 None.
+            application (string, optional): 应用程序ID. 默认值 None.
+            organization (string, optional): 组织ID. 默认值 None.
+            expire (string, optional): 超时时间. 默认值 None.
+            usable (bool, optional): 是否只检查服务可用. 默认值 False.
+        """     
+
+    def end_service(
+        self, 
+        accno,
+        svcno,
+        label,        
+        providerno,
+        start_time,
+        finish_time=None,
+        count=1,
+        summary=None,
+        application=None,
+        organization=None
+        ):
+        """结束服务计费
+
+        Args:
+            accno (string): 计费帐号
+            svcno (string): 服务流水号
+            label (string): 服务项目标签
+            providerno (string): 服务方序列号
+            start_time (string): 服务开始时间
+            finish_time (string, optional): 服务结束时间. 默认值 None.
+            count (int, optional): 数量. 默认值 1.
+            summary (string, optional): 摘要. 默认值 None.
+            application (string, optional): 应用程序ID. 默认值 None.
+            organization (string, optional): 组织ID. 默认值 None.
+        """        
