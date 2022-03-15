@@ -120,14 +120,28 @@ class CounterClient():
             accno (string): 计费帐号
             label (string): 服务项目标签
             providerno (string): 服务方序列号
-            start_time (string, optional): 服务开始时间. 默认值 None.
+            start_time (datetime, optional): 服务开始时间. 默认值 None.
             count (int, optional): 数量. 默认值 1.
             summary (string, optional): 摘要. 默认值 None.
             application (string, optional): 应用程序ID. 默认值 None.
             organization (string, optional): 组织ID. 默认值 None.
-            expire (string, optional): 超时时间. 默认值 None.
+            expire (datetime, optional): 超时时间. 默认值 None.
             usable (bool, optional): 是否只检查服务可用. 默认值 False.
-        """     
+        """    
+        assert accno and label
+        request = counter_pb2.StartServiceRequest(
+            accno=accno,
+            label=label,        
+            providerno=providerno,
+            start_time=start_time.isoformat() if start_time else None,
+            count=count,
+            summary=summary,
+            application=application,
+            organization=organization,
+            expire=expire.isoformat() if expire else None,
+            usable=usable           
+        )
+        return self._stub.StartService(request)
 
     def end_service(
         self, 

@@ -33,7 +33,7 @@ class CounterServiceStub(object):
         self.StartService = channel.unary_unary(
                 '/counter.CounterService/StartService',
                 request_serializer=counter__pb2.StartServiceRequest.SerializeToString,
-                response_deserializer=counter__pb2.UsableServiceResponse.FromString,
+                response_deserializer=counter__pb2.StartServiceResponse.FromString,
                 )
         self.EndService = channel.unary_unary(
                 '/counter.CounterService/EndService',
@@ -138,7 +138,7 @@ def add_CounterServiceServicer_to_server(servicer, server):
             'StartService': grpc.unary_unary_rpc_method_handler(
                     servicer.StartService,
                     request_deserializer=counter__pb2.StartServiceRequest.FromString,
-                    response_serializer=counter__pb2.UsableServiceResponse.SerializeToString,
+                    response_serializer=counter__pb2.StartServiceResponse.SerializeToString,
             ),
             'EndService': grpc.unary_unary_rpc_method_handler(
                     servicer.EndService,
@@ -235,7 +235,7 @@ class CounterService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/counter.CounterService/StartService',
             counter__pb2.StartServiceRequest.SerializeToString,
-            counter__pb2.UsableServiceResponse.FromString,
+            counter__pb2.StartServiceResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

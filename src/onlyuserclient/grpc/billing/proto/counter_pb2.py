@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcounter.proto\x12\x07\x63ounter\"\x85\x01\n\x14\x43reateAccountRequest\x12\r\n\x05owner\x18\x01 \x01(\t\x12\x34\n\x04kind\x18\x02 \x01(\x0e\x32&.counter.CreateAccountRequest.KindType\x12\x0c\n\x04name\x18\x03 \x01(\t\"\x1a\n\x08KindType\x12\x06\n\x02PS\x10\x00\x12\x06\n\x02\x43O\x10\x01\"\xc8\x01\n\x0f\x41\x63\x63ountResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x61\x63\x63no\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x04 \x01(\x02\x12\x0e\n\x06\x63redit\x18\x05 \x01(\x02\x12\x0f\n\x07warning\x18\x06 \x01(\x02\x12\r\n\x05state\x18\x07 \x01(\t\x12/\n\x04kind\x18\x08 \x01(\x0e\x32!.counter.AccountResponse.KindType\"\x1a\n\x08KindType\x12\x06\n\x02PS\x10\x00\x12\x06\n\x02\x43O\x10\x01\"T\n\x13QueryAccountRequest\x12\x0e\n\x06userid\x18\x01 \x01(\t\x12\x15\n\rapplicationid\x18\x02 \x01(\t\x12\x16\n\x0eorganizationid\x18\x03 \x01(\t\"C\n\x14UsableServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\"\'\n\x15UsableServiceResponse\x12\x0e\n\x06usable\x18\x01 \x01(\x08\"\xc6\x01\n\x13StartServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nstart_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x12\n\nproviderno\x18\x05 \x01(\t\x12\x0f\n\x07summary\x18\x06 \x01(\t\x12\x13\n\x0b\x61pplication\x18\x07 \x01(\t\x12\x14\n\x0corganization\x18\x08 \x01(\t\x12\x0e\n\x06\x65xpire\x18\t \x01(\t\x12\x0e\n\x06usable\x18\n \x01(\x08\"\xc8\x01\n\x11\x45ndServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t\x12\r\n\x05label\x18\x03 \x01(\t\x12\x12\n\nstart_time\x18\x04 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x05 \x01(\t\x12\r\n\x05\x63ount\x18\x06 \x01(\x05\x12\x12\n\nproviderno\x18\x07 \x01(\t\x12\x0f\n\x07summary\x18\x08 \x01(\t\x12\x13\n\x0b\x61pplication\x18\t \x01(\t\x12\x14\n\x0corganization\x18\n \x01(\t\"i\n\x12\x45ndServiceResponse\x12\r\n\x05svcno\x18\x01 \x01(\t\x12\x12\n\nstart_time\x18\x02 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x05 \x01(\x05\"M\n\x0fResourceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\x12\r\n\x05total\x18\x04 \x01(\x05\"1\n\x10ResourceResponse\x12\r\n\x05usage\x18\x01 \x01(\x05\x12\x0e\n\x06limits\x18\x02 \x01(\x05\"V\n\x12KeepServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nproviderno\x18\x03 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x04 \x01(\t\"4\n\x13KeepServiceResponse\x12\x0e\n\x06\x65xpire\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t2\xf1\x04\n\x0e\x43ounterService\x12J\n\rCreateAccount\x12\x1d.counter.CreateAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12H\n\x0cQueryAccount\x12\x1c.counter.QueryAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12P\n\rUsableService\x12\x1d.counter.UsableServiceRequest\x1a\x1e.counter.UsableServiceResponse\"\x00\x12N\n\x0cStartService\x12\x1c.counter.StartServiceRequest\x1a\x1e.counter.UsableServiceResponse\"\x00\x12G\n\nEndService\x12\x1a.counter.EndServiceRequest\x1a\x1b.counter.EndServiceResponse\"\x00\x12I\n\x10IncreaseResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12G\n\x0eReduceResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12J\n\x0bKeepService\x12\x1b.counter.KeepServiceRequest\x1a\x1c.counter.KeepServiceResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcounter.proto\x12\x07\x63ounter\"\x85\x01\n\x14\x43reateAccountRequest\x12\r\n\x05owner\x18\x01 \x01(\t\x12\x34\n\x04kind\x18\x02 \x01(\x0e\x32&.counter.CreateAccountRequest.KindType\x12\x0c\n\x04name\x18\x03 \x01(\t\"\x1a\n\x08KindType\x12\x06\n\x02PS\x10\x00\x12\x06\n\x02\x43O\x10\x01\"\xc8\x01\n\x0f\x41\x63\x63ountResponse\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x61\x63\x63no\x18\x02 \x01(\t\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x0f\n\x07\x62\x61lance\x18\x04 \x01(\x02\x12\x0e\n\x06\x63redit\x18\x05 \x01(\x02\x12\x0f\n\x07warning\x18\x06 \x01(\x02\x12\r\n\x05state\x18\x07 \x01(\t\x12/\n\x04kind\x18\x08 \x01(\x0e\x32!.counter.AccountResponse.KindType\"\x1a\n\x08KindType\x12\x06\n\x02PS\x10\x00\x12\x06\n\x02\x43O\x10\x01\"T\n\x13QueryAccountRequest\x12\x0e\n\x06userid\x18\x01 \x01(\t\x12\x15\n\rapplicationid\x18\x02 \x01(\t\x12\x16\n\x0eorganizationid\x18\x03 \x01(\t\"C\n\x14UsableServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\"\'\n\x15UsableServiceResponse\x12\x0e\n\x06usable\x18\x01 \x01(\x08\"\xc6\x01\n\x13StartServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nstart_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x12\n\nproviderno\x18\x05 \x01(\t\x12\x0f\n\x07summary\x18\x06 \x01(\t\x12\x13\n\x0b\x61pplication\x18\x07 \x01(\t\x12\x14\n\x0corganization\x18\x08 \x01(\t\x12\x0e\n\x06\x65xpire\x18\t \x01(\t\x12\x0e\n\x06usable\x18\n \x01(\x08\"5\n\x14StartServiceResponse\x12\r\n\x05svcno\x18\x01 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x02 \x01(\t\"\xc8\x01\n\x11\x45ndServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t\x12\r\n\x05label\x18\x03 \x01(\t\x12\x12\n\nstart_time\x18\x04 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x05 \x01(\t\x12\r\n\x05\x63ount\x18\x06 \x01(\x05\x12\x12\n\nproviderno\x18\x07 \x01(\t\x12\x0f\n\x07summary\x18\x08 \x01(\t\x12\x13\n\x0b\x61pplication\x18\t \x01(\t\x12\x14\n\x0corganization\x18\n \x01(\t\"i\n\x12\x45ndServiceResponse\x12\r\n\x05svcno\x18\x01 \x01(\t\x12\x12\n\nstart_time\x18\x02 \x01(\t\x12\x13\n\x0b\x66inish_time\x18\x03 \x01(\t\x12\r\n\x05\x63ount\x18\x04 \x01(\x05\x12\x0c\n\x04\x63ost\x18\x05 \x01(\x02\"M\n\x0fResourceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\r\n\x05\x63ount\x18\x03 \x01(\x05\x12\r\n\x05total\x18\x04 \x01(\x05\"1\n\x10ResourceResponse\x12\r\n\x05usage\x18\x01 \x01(\x05\x12\x0e\n\x06limits\x18\x02 \x01(\x05\"V\n\x12KeepServiceRequest\x12\r\n\x05\x61\x63\x63no\x18\x01 \x01(\t\x12\r\n\x05label\x18\x02 \x01(\t\x12\x12\n\nproviderno\x18\x03 \x01(\t\x12\x0e\n\x06\x65xpire\x18\x04 \x01(\t\"4\n\x13KeepServiceResponse\x12\x0e\n\x06\x65xpire\x18\x01 \x01(\t\x12\r\n\x05svcno\x18\x02 \x01(\t2\xf0\x04\n\x0e\x43ounterService\x12J\n\rCreateAccount\x12\x1d.counter.CreateAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12H\n\x0cQueryAccount\x12\x1c.counter.QueryAccountRequest\x1a\x18.counter.AccountResponse\"\x00\x12P\n\rUsableService\x12\x1d.counter.UsableServiceRequest\x1a\x1e.counter.UsableServiceResponse\"\x00\x12M\n\x0cStartService\x12\x1c.counter.StartServiceRequest\x1a\x1d.counter.StartServiceResponse\"\x00\x12G\n\nEndService\x12\x1a.counter.EndServiceRequest\x1a\x1b.counter.EndServiceResponse\"\x00\x12I\n\x10IncreaseResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12G\n\x0eReduceResource\x12\x18.counter.ResourceRequest\x1a\x19.counter.ResourceResponse\"\x00\x12J\n\x0bKeepService\x12\x1b.counter.KeepServiceRequest\x1a\x1c.counter.KeepServiceResponse\"\x00\x62\x06proto3')
 
 
 
@@ -24,6 +24,7 @@ _QUERYACCOUNTREQUEST = DESCRIPTOR.message_types_by_name['QueryAccountRequest']
 _USABLESERVICEREQUEST = DESCRIPTOR.message_types_by_name['UsableServiceRequest']
 _USABLESERVICERESPONSE = DESCRIPTOR.message_types_by_name['UsableServiceResponse']
 _STARTSERVICEREQUEST = DESCRIPTOR.message_types_by_name['StartServiceRequest']
+_STARTSERVICERESPONSE = DESCRIPTOR.message_types_by_name['StartServiceResponse']
 _ENDSERVICEREQUEST = DESCRIPTOR.message_types_by_name['EndServiceRequest']
 _ENDSERVICERESPONSE = DESCRIPTOR.message_types_by_name['EndServiceResponse']
 _RESOURCEREQUEST = DESCRIPTOR.message_types_by_name['ResourceRequest']
@@ -73,6 +74,13 @@ StartServiceRequest = _reflection.GeneratedProtocolMessageType('StartServiceRequ
   # @@protoc_insertion_point(class_scope:counter.StartServiceRequest)
   })
 _sym_db.RegisterMessage(StartServiceRequest)
+
+StartServiceResponse = _reflection.GeneratedProtocolMessageType('StartServiceResponse', (_message.Message,), {
+  'DESCRIPTOR' : _STARTSERVICERESPONSE,
+  '__module__' : 'counter_pb2'
+  # @@protoc_insertion_point(class_scope:counter.StartServiceResponse)
+  })
+_sym_db.RegisterMessage(StartServiceResponse)
 
 EndServiceRequest = _reflection.GeneratedProtocolMessageType('EndServiceRequest', (_message.Message,), {
   'DESCRIPTOR' : _ENDSERVICEREQUEST,
@@ -136,18 +144,20 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _USABLESERVICERESPONSE._serialized_end=559
   _STARTSERVICEREQUEST._serialized_start=562
   _STARTSERVICEREQUEST._serialized_end=760
-  _ENDSERVICEREQUEST._serialized_start=763
-  _ENDSERVICEREQUEST._serialized_end=963
-  _ENDSERVICERESPONSE._serialized_start=965
-  _ENDSERVICERESPONSE._serialized_end=1070
-  _RESOURCEREQUEST._serialized_start=1072
-  _RESOURCEREQUEST._serialized_end=1149
-  _RESOURCERESPONSE._serialized_start=1151
-  _RESOURCERESPONSE._serialized_end=1200
-  _KEEPSERVICEREQUEST._serialized_start=1202
-  _KEEPSERVICEREQUEST._serialized_end=1288
-  _KEEPSERVICERESPONSE._serialized_start=1290
-  _KEEPSERVICERESPONSE._serialized_end=1342
-  _COUNTERSERVICE._serialized_start=1345
-  _COUNTERSERVICE._serialized_end=1970
+  _STARTSERVICERESPONSE._serialized_start=762
+  _STARTSERVICERESPONSE._serialized_end=815
+  _ENDSERVICEREQUEST._serialized_start=818
+  _ENDSERVICEREQUEST._serialized_end=1018
+  _ENDSERVICERESPONSE._serialized_start=1020
+  _ENDSERVICERESPONSE._serialized_end=1125
+  _RESOURCEREQUEST._serialized_start=1127
+  _RESOURCEREQUEST._serialized_end=1204
+  _RESOURCERESPONSE._serialized_start=1206
+  _RESOURCERESPONSE._serialized_end=1255
+  _KEEPSERVICEREQUEST._serialized_start=1257
+  _KEEPSERVICEREQUEST._serialized_end=1343
+  _KEEPSERVICERESPONSE._serialized_start=1345
+  _KEEPSERVICERESPONSE._serialized_end=1397
+  _COUNTERSERVICE._serialized_start=1400
+  _COUNTERSERVICE._serialized_end=2024
 # @@protoc_insertion_point(module_scope)
