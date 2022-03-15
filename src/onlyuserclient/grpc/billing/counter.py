@@ -1,3 +1,4 @@
+from httpx import request
 import grpc
 from onlyuserclient.grpc.billing.proto import counter_pb2
 from onlyuserclient.grpc.billing.proto import counter_pb2_grpc
@@ -91,7 +92,14 @@ class CounterClient():
             accno (string): 计费帐号
             label (string): 服务项目标签
             count (int, optional): 数量. 默认值 1.
-        """      
+        """
+        assert accno and label
+        request = counter_pb2.UsableServiceRequest(
+            accno=accno,
+            label=label,
+            count=count
+        )      
+        return self._stub.UsableService(request)
 
     def start_service(
         self, 
