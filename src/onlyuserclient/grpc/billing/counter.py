@@ -197,8 +197,39 @@ class CounterClient():
         Args:
             accno (string): 计费帐号
             label (string): 服务项目标签
-            count (int, optional): 新增占用资数量. 默认 1.
+            count (int, optional): 新增占用资源数量. 默认 1.
             total (int, optional): 占用资源总数. 默认 None.
         """
         
-    
+    def reduce_resource(
+        self,
+        accno,
+        label,
+        count=1,
+        total=None
+        ):
+        """减少资源占用
+
+        Args:
+            accno (string): 计费帐号
+            label (string): 服务项目标签
+            count (int, optional): 减少占用资源数量. 默认 1.
+            total (int, optional): 占用资源总数. 默认 None.
+        """
+        
+    def keep_service(
+        self,
+        accno,
+        label,
+        providerno=None,
+        expire=None
+        ):
+        """服务计费保持
+
+        Args:
+            accno (string): 计费帐号
+            label (string): 服务项目标签
+            providerno (string, optional): 服务序列号. 默认 None.
+            expire (datetime, optional): 服务超时时间. 默认 None.
+        """
+        
