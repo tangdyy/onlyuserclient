@@ -163,10 +163,42 @@ class CounterClient():
             svcno (string): 服务流水号
             label (string): 服务项目标签
             providerno (string): 服务方序列号
-            start_time (string): 服务开始时间
-            finish_time (string, optional): 服务结束时间. 默认值 None.
+            start_time (datetime): 服务开始时间
+            finish_time (datetime, optional): 服务结束时间. 默认值 None.
             count (int, optional): 数量. 默认值 1.
             summary (string, optional): 摘要. 默认值 None.
             application (string, optional): 应用程序ID. 默认值 None.
             organization (string, optional): 组织ID. 默认值 None.
         """        
+        assert accno and svcno and label and providerno and start_time
+        request = counter_pb2.EndServiceRequest(
+            accno=accno,
+            svcno=svcno,
+            label=label,        
+            providerno=providerno,
+            start_time=start_time.isoformat() if start_time else None,
+            finish_time=finish_time.isoformat() if finish_time else None,
+            count=count,
+            summary=summary,
+            application=application,
+            organization=organization
+        )
+        return self._stub.EndService(request)
+    
+    def increase_resource(
+        self,
+        accno,
+        label,
+        count=1,
+        total=None
+        ):
+        """增加资源占用
+
+        Args:
+            accno (string): 计费帐号
+            label (string): 服务项目标签
+            count (int, optional): 新增占用资数量. 默认 1.
+            total (int, optional): 占用资源总数. 默认 None.
+        """
+        
+    
