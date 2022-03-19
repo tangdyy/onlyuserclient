@@ -149,7 +149,7 @@ class CounterClient():
         svcno,
         label,        
         providerno,
-        start_time,
+        start_time=None,
         finish_time=None,
         count=1,
         summary=None,
@@ -170,7 +170,7 @@ class CounterClient():
             application (string, optional): 应用程序ID. 默认值 None.
             organization (string, optional): 组织ID. 默认值 None.
         """        
-        assert accno and svcno and label and providerno and start_time
+        assert accno and label and providerno
         request = counter_pb2.EndServiceRequest(
             accno=accno,
             svcno=svcno,
