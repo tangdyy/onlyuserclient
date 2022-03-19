@@ -350,3 +350,35 @@ GET resources/choices
   计费账号，字符串。
 >异常：
   计费账号不存在时，产生异常：`onlyuserclient.api.billing.BillAccountNotExist`。
+
+### `onlyuserclient.grpc.billing.counter`模块
+  服务程序计费 gRpc 接口。
+
+#### `CounterClient` 对象
+  `CounterClient` 对象提供服务程序与计费系统通信的接口方法。
+
+#### `class CounterClient(server=None,max_reconnect=0, reconnect_interval=5)`
+    参数：
+    `server` 计费系统 grpc 服务器地址，默认 `localhost:50080`。
+    `max_reconnect` 最大掉线重连次数，默认 0。
+    `reconnect_interval` 掉线重连时间间隔，默认5秒。 
+#### `CounterClient.create_account(owner, kind, name)`
+    创建计费帐户。此方法通常由`onlyuser`调用。
+    参数：
+    `owner` 绑定计费帐户的用户ID。
+    `kind` 帐户类别， 0 个人帐户，1 公司帐户。
+    `name` 帐户名称。
+#### `CounterClient.query_account(userid, applicationid, organizationid)`
+    查询用户或者组织绑定的计费帐户。
+    参数：
+    `userid` 用户ID。
+    `applicationid` 应用程序ID。
+    `organizationid` 组组ID。
+    `applicationid`与`organizationid`同时使用。
+
+
+
+```python
+from onlyuserclient.grpc.billing import counter
+client = counter.CounterClient()
+```

@@ -5,7 +5,7 @@ with open("readme.md", "r", encoding='utf8') as fh:
 
 setup(
     name = 'onlyuserclient',
-    version = '1.1.0',
+    version = '1.2.0',
     description = 'onlyuser client',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -16,7 +16,8 @@ setup(
         'django', 
         'djangorestframework', 
         "simple-rest-client==1.1.1", 
-        'django-objectid'
+        'django-objectid',
+        'grpcio'
     ],
     package_dir={'': 'src'},
     packages=find_packages('src'),
