@@ -200,6 +200,15 @@ class CounterClient():
             count (int, optional): 新增占用资源数量. 默认 1.
             total (int, optional): 占用资源总数. 默认 None.
         """
+        assert accno and label
+        request = counter_pb2.ResourceRequest(
+            accno=accno,
+            label=label,
+            count=count,
+            total=total
+        )
+        return self._stub.IncreaseResource(request)
+
         
     def reduce_resource(
         self,
@@ -216,6 +225,14 @@ class CounterClient():
             count (int, optional): 减少占用资源数量. 默认 1.
             total (int, optional): 占用资源总数. 默认 None.
         """
+        assert accno and label
+        request = counter_pb2.ResourceRequest(
+            accno=accno,
+            label=label,
+            count=count,
+            total=total
+        )
+        return self._stub.ReduceResource(request)
         
     def keep_service(
         self,
@@ -232,4 +249,11 @@ class CounterClient():
             providerno (string, optional): 服务序列号. 默认 None.
             expire (datetime, optional): 服务超时时间. 默认 None.
         """
-        
+        assert accno and label
+        request = counter_pb2.KeepServiceRequest(
+            accno=accno,
+            label=label,
+            providerno=providerno,
+            expire=expire.isoformat() if expire else None
+        )
+        return self._stub.KeepService(request)
