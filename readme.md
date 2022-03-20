@@ -358,26 +358,50 @@ GET resources/choices
   `CounterClient` 对象提供服务程序与计费系统通信的接口方法。
 
 #### `class CounterClient(server=None,max_reconnect=0, reconnect_interval=5)`
-    参数：
-    `server` 计费系统 grpc 服务器地址，默认 `localhost:50080`。
-    `max_reconnect` 最大掉线重连次数，默认 0。
-    `reconnect_interval` 掉线重连时间间隔，默认5秒。 
+参数：
+* `server`    
+    计费系统 grpc 服务器地址，默认 `localhost:50080`。
+* `max_reconnect`    
+   最大掉线重连次数，默认 0。
+* `reconnect_interval`   
+   掉线重连时间间隔，默认5秒。 
 #### `CounterClient.create_account(owner, kind, name)`
     创建计费帐户。此方法通常由`onlyuser`调用。
-    参数：
-    `owner` 绑定计费帐户的用户ID。
-    `kind` 帐户类别， 0 个人帐户，1 公司帐户。
-    `name` 帐户名称。
+参数：
+* `owner`    
+    绑定计费帐户的用户ID。
+* `kind`     
+    帐户类别， 0 个人帐户，1 公司帐户。
+* `name`     
+    帐户名称。
 #### `CounterClient.query_account(userid, applicationid, organizationid)`
     查询用户或者组织绑定的计费帐户。
-    参数：
-    `userid` 用户ID。
-    `applicationid` 应用程序ID。
-    `organizationid` 组组ID。
-    `applicationid`与`organizationid`同时使用。
-
-
-
+参数：
+* `userid`    
+    用户ID。
+* `applicationid`     
+    应用程序ID。
+* `organizationid`     
+    组组ID。    
+    ***注意：参数需要提供 `userid`或者 `applicationid`和 `organizationid`。***
+#### `CounterClient.usable_service(accno, label, count=1)`
+    检查服务是否可用。返回结果中字段 `usable` 值是 `False` 或者发生异常，表示服务不可用，服务提供者应当中止服务。
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。
+* `count`   
+    准备使用的服务项目数量。默认值 `1` 。    
+#### `CounterClient.start_service(accno, label, providerno, start_time=None, count=1, summary=None, application=None, organization=None, expire=None, usable=False)`
+    开始服务项目计费。
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。
+* `count`   
+    准备使用的服务项目数量。默认值 `1` 。    
 ```python
 from onlyuserclient.grpc.billing import counter
 client = counter.CounterClient()
