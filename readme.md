@@ -365,6 +365,8 @@ GET resources/choices
    最大掉线重连次数，默认 0。
 * `reconnect_interval`   
    掉线重连时间间隔，默认5秒。 
+返加值：
+
 #### `CounterClient.create_account(owner, kind, name)`
     创建计费帐户。此方法通常由`onlyuser`调用。
 参数：
