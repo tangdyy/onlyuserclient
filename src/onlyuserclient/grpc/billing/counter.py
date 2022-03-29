@@ -98,8 +98,9 @@ class CounterClient():
             accno=accno,
             label=label,
             count=count
-        )      
-        return self._stub.UsableService(request)
+        ) 
+        response = self._stub.UsableService(request)     
+        return response.usable
 
     def start_service(
         self, 
