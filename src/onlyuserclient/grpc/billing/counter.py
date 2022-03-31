@@ -1,3 +1,4 @@
+import time
 from httpx import request
 import grpc
 from onlyuserclient.grpc.billing.proto import counter_pb2
@@ -184,7 +185,22 @@ class CounterClient():
             application=application,
             organization=organization
         )
-        return self._stub.EndService(request)
+        retry = self._max_reconnect
+        while True:             
+            exec = None
+            try:
+                response = self._stub.EndService(request)
+            except Exception as e:
+                exec = e
+
+            if exec and exec.code() == grpc.StatusCode.UNAVAILABLE and retry > 0:
+                retry -= 1
+                time.sleep(self._reconnect_interval)
+                continue
+            if exec:
+                raise exec
+            break
+        return response
     
     def increase_resource(
         self,
