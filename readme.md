@@ -449,13 +449,84 @@ GET resources/choices
 
 返回值：   
 `Response` 对象，包含属性：    
-* `svcno`   
+* `svcno`    
 * `expire`
 
 #### `CounterClient.end_service(accno, svcno, label, providerno, start_time=None, finish_time=None, count=1, summary=None, application=None，organization=None)`  
-    结束服务计费。         
+    结束服务计费。具备服务端断线重试功能。
+参数：
+* `accno`    
+    计费帐号。
+* `svcno`   
+    服务流水号。   
+* `label`   
+    服务项目标签。
+* `providerno`   
+    服务提供者序列号。用于唯一标识服务记录，可以使用 `objectid` ，freeswitch 话单的 uuid 等。 
+* `start_time`     
+    服务计费开始时间，带 `UTC` 时区的 `datetime` 对象。
+* `finish_time`    
+    服务计费结束时间，带 `UTC` 时区的 `datetime` 对象。如果是 `None`，默认是接口调用时间。    
+* `count`   
+    服务资源数量。默认值 `1`。
+* `summary`    
+    服务摘要。对服务记录的简要描述，应当包括一些关键词，以便于理解服务内容。默认值 `None`。
+* `application`    
+    应用程序ID。默认值 `None`。
+* `organization`    
+    组织ID。默认值 `None`。   
 
+返回值：   
+`Response` 对象，包含属性：    
+* `svcno`   
+* `start_time`   
+* `finish_time`     
+* `count`      
+* `cost`     
+
+#### `CounterClient.increase_resource(accno, label, count=1, total=None):` 
+    申请增加服务项目的资源占用。如果发生异常，申请失败；返回 Response 对象，申请成功。
+
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。    
+* `count`   
+    申请增加占用的服务资源数量。默认值 `1`。  
+* `total`   
+    增加占用的服务资源后，计费帐户占用的资源总数。默认 `None`，由计费服务器计算。
+
+返回值：   
+* `usage`   
+* `limits`   
+
+#### `CounterClient.reduce_resource(accno, label, count=1, total=None):` 
+    申请减少服务项目的资源占用。如果发生异常，申请失败；返回 Response 对象，申请成功。
+
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。    
+* `count`   
+    申请减少占用的服务资源数量。默认值 `1`。  
+* `total`   
+    减少占用的服务资源后，计费帐户占用的资源总数。默认 `None`，由计费服务器计算。
+
+返回值：   
+* `usage`   
+* `limits`   
+
+使用 gRPC 接口实现服务功能按次计费示例代码：    
 ```python
 from onlyuserclient.grpc.billing import counter
 client = counter.CounterClient()
+
+# 检查计费帐户是否可以使用该服务项目
+if client.usable_service(accno, label, count=1):
+  # 功能代码调用
+  fun()
+  # 调用成功，结束服务计费。
+  client.end_service(accno, svcno, label, providerno, start_time, finish_time, count, summary, application，organization)
 ```
