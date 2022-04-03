@@ -148,10 +148,10 @@ class CounterClient():
     def end_service(
         self, 
         accno,
-        svcno,
         label,        
         providerno,
-        start_time=None,
+        start_time,
+        svcno=None,
         finish_time=None,
         count=1,
         summary=None,
@@ -161,11 +161,11 @@ class CounterClient():
         """结束服务计费
 
         Args:
-            accno (string): 计费帐号
-            svcno (string): 服务流水号
+            accno (string): 计费帐号            
             label (string): 服务项目标签
             providerno (string): 服务方序列号
             start_time (datetime): 服务开始时间
+            svcno (string): 服务流水号. 默认 None.
             finish_time (datetime, optional): 服务结束时间. 默认值 None.
             count (int, optional): 数量. 默认值 1.
             summary (string, optional): 摘要. 默认值 None.
