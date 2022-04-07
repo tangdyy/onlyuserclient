@@ -452,7 +452,7 @@ GET resources/choices
 * `svcno`    
 * `expire`
 
-#### `CounterClient.end_service(accno, label, providerno, start_time=None, svcno=None, finish_time=None, count=1, summary=None, application=None，organization=None)`  
+#### `CounterClient.end_service(accno, label, providerno, start_time, svcno=None, finish_time=None, count=1, summary=None, application=None，organization=None)`  
     结束服务计费。具备服务端断线重试功能。
 参数：
 * `accno`    
