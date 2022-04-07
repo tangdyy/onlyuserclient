@@ -457,14 +457,14 @@ GET resources/choices
 参数：
 * `accno`    
     计费帐号。
-* `svcno`   
-    服务流水号。   
 * `label`   
     服务项目标签。
 * `providerno`   
     服务提供者序列号。用于唯一标识服务记录，可以使用 `objectid` ，freeswitch 话单的 uuid 等。 
 * `start_time`     
     服务计费开始时间，带 `UTC` 时区的 `datetime` 对象。
+* `svcno`   
+    服务流水号。默认值 `None`。       
 * `finish_time`    
     服务计费结束时间，带 `UTC` 时区的 `datetime` 对象。如果是 `None`，默认是接口调用时间。    
 * `count`   
