@@ -411,7 +411,7 @@ GET resources/choices
 * `kind`
 
 #### `CounterClient.usable_service(accno, label, count=1)`
-    检查服务是否可用。返回结果中字段 `usable` 值是 `False` 或者发生异常，表示服务不可用，服务提供者应当中止服务。
+    检查服务是否可用。返回结果 `False` 或者发生异常，表示服务不可用，服务提供者应当中止服务。
 参数：
 * `accno`    
     计费帐号。
