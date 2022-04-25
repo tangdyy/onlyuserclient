@@ -33,6 +33,8 @@ billing_default_settings = {
     'RPC_PORT': 18812,
     # RPC超时(秒)
     'RPC_TIMEOUT': 5,
+    # gRPC地址
+    'GRPC_ADDRESS': '[::]:50080',
     # 计费服务器Restful接口URL
     'API_ROOT_URL': None,
     # API URL前缀

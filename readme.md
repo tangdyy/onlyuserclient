@@ -350,3 +350,183 @@ GET resources/choices
   计费账号，字符串。
 >异常：
   计费账号不存在时，产生异常：`onlyuserclient.api.billing.BillAccountNotExist`。
+
+### `onlyuserclient.grpc.billing.counter`模块
+  ***1.2.0 增加***   
+  服务程序计费 gRpc 接口。
+
+#### `CounterClient` 对象
+  `CounterClient` 对象提供服务程序与计费系统通信的接口方法。
+
+#### `class CounterClient(server=None,max_reconnect=0, reconnect_interval=5)`
+参数：
+* `server`    
+    计费系统 grpc 服务器地址，默认 `localhost:50080`。
+* `max_reconnect`    
+    最大掉线重连次数，默认 0。
+* `reconnect_interval`   
+    掉线重连时间间隔，默认5秒。 
+
+#### `CounterClient.create_account(owner, kind, name)`
+    创建计费帐户。此方法通常由`onlyuser`调用。
+参数：
+* `owner`    
+    绑定计费帐户的用户ID。
+* `kind`     
+    帐户类别， 0 个人帐户，1 公司帐户。
+* `name`     
+    帐户名称。  
+
+返回值：   
+`Response` 对象，包含属性：    
+* `id`   
+* `accno`
+* `name`
+* `balance`
+* `credit`   
+* `warning`    
+* `state`   
+* `kind`
+
+#### `CounterClient.query_account(userid, applicationid, organizationid)`
+    查询用户或者组织绑定的计费帐户。
+参数：
+* `userid`    
+    用户ID。
+* `applicationid`     
+    应用程序ID。
+* `organizationid`     
+    组组ID。    
+    ***注意：参数需要提供 `userid`或者 `applicationid`和 `organizationid`。***    
+
+返回值：   
+`Response` 对象，包含属性：    
+* `id`   
+* `accno`
+* `name`
+* `balance`
+* `credit`   
+* `warning`    
+* `state`   
+* `kind`
+
+#### `CounterClient.usable_service(accno, label, count=1)`
+    检查服务是否可用。返回结果 `False` 或者发生异常，表示服务不可用，服务提供者应当中止服务。
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。
+* `count`   
+    准备使用的服务资源数量。默认值 `1` 。 
+
+返回值：   
+布尔类型，`True` 服务可用，`False` 服务不可用。   
+
+#### `CounterClient.start_service(accno, label, providerno, start_time=None, count=1, summary=None, application=None, organization=None, expire=None, usable=False)`
+    开始服务项目计费。
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。
+* `providerno`   
+    服务提供者序列号。用于唯一标识服务记录，可以使用 `objectid` ，freeswitch 话单的 uuid 等。 
+* `start_time`     
+    服务计费开始时间，带 `UTC` 时区的 `datetime` 对象。如果是 `None`，默认是接口调用时间。    
+* `count`   
+    服务资源数量。默认值 `1`。
+* `summary`    
+    服务摘要。对服务记录的简要描述，应当包括一些关键词，以便于理解服务内容。默认值 `None`。
+* `application`    
+    应用程序ID。默认值 `None`。
+* `organization`    
+    组织ID。默认值 `None`。
+* `expire`    
+    计费保持超时间间，带 `UTC` 时区的 `datetime` 对象，超过此时间计费服务器强制结束服务计费，如果 `None` 不进行超时检查。 默认值 `None` 。    
+* `usable`  
+    是否只检查服务可用。默认值 `False` 。
+
+返回值：   
+`Response` 对象，包含属性：    
+* `svcno`    
+* `expire`
+
+#### `CounterClient.end_service(accno, label, providerno, start_time, svcno=None, finish_time=None, count=1, summary=None, application=None，organization=None)`  
+    结束服务计费。具备服务端断线重试功能。
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。
+* `providerno`   
+    服务提供者序列号。用于唯一标识服务记录，可以使用 `objectid` ，freeswitch 话单的 uuid 等。 
+* `start_time`     
+    服务计费开始时间，带 `UTC` 时区的 `datetime` 对象。
+* `svcno`   
+    服务流水号。默认值 `None`。       
+* `finish_time`    
+    服务计费结束时间，带 `UTC` 时区的 `datetime` 对象。如果是 `None`，默认是接口调用时间。    
+* `count`   
+    服务资源数量。默认值 `1`。
+* `summary`    
+    服务摘要。对服务记录的简要描述，应当包括一些关键词，以便于理解服务内容。默认值 `None`。
+* `application`    
+    应用程序ID。默认值 `None`。
+* `organization`    
+    组织ID。默认值 `None`。   
+
+返回值：   
+`Response` 对象，包含属性：    
+* `svcno`   
+* `start_time`   
+* `finish_time`     
+* `count`      
+* `cost`     
+
+#### `CounterClient.increase_resource(accno, label, count=1, total=None):` 
+    申请增加服务项目的资源占用。如果发生异常，申请失败；返回 Response 对象，申请成功。
+
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。    
+* `count`   
+    申请增加占用的服务资源数量。默认值 `1`。  
+* `total`   
+    增加占用的服务资源后，计费帐户占用的资源总数。默认 `None`，由计费服务器计算。
+
+返回值：   
+* `usage`   
+* `limits`   
+
+#### `CounterClient.reduce_resource(accno, label, count=1, total=None):` 
+    申请减少服务项目的资源占用。如果发生异常，申请失败；返回 Response 对象，申请成功。
+
+参数：
+* `accno`    
+    计费帐号。
+* `label`   
+    服务项目标签。    
+* `count`   
+    申请减少占用的服务资源数量。默认值 `1`。  
+* `total`   
+    减少占用的服务资源后，计费帐户占用的资源总数。默认 `None`，由计费服务器计算。
+
+返回值：   
+* `usage`   
+* `limits`   
+
+使用 gRPC 接口实现服务功能按次计费示例代码：    
+```python
+from onlyuserclient.grpc.billing import counter
+client = counter.CounterClient()
+
+# 检查计费帐户是否可以使用该服务项目
+if client.usable_service(accno, label, count=1):
+  # 功能代码调用
+  fun()
+  # 调用成功，结束服务计费。
+  client.end_service(accno, svcno, label, providerno, start_time, finish_time, count, summary, application，organization)
+```
