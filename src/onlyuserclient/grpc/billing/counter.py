@@ -1,5 +1,4 @@
 import time
-from httpx import request
 import grpc
 from onlyuserclient.grpc.billing.proto import counter_pb2
 from onlyuserclient.grpc.billing.proto import counter_pb2_grpc
