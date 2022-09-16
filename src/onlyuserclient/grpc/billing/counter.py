@@ -273,3 +273,22 @@ class CounterClient():
             expire=expire.isoformat() if expire else None
         )
         return self._stub.KeepService(request)
+    
+    def query_account_service(
+        self,
+        accno,
+        label
+        ):
+        """查询计费帐户服务可用
+
+        Args:
+            accno (string): 计费帐号
+            label (string): 服务项目标签
+        """        
+        assert accno and label
+        request = counter_pb2.QueryAccountServiceRequest(
+            accno=accno,
+            label=label            
+        )        
+        response = self._stub.QueryAccountService(request)
+        return response.code, response.detail
