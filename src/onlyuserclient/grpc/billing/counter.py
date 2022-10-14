@@ -293,3 +293,22 @@ class CounterClient():
         )        
         response = self._stub.QueryAccountService(request)
         return response.code, response.detail
+    
+    def query_subaccounts(
+        self,
+        parent,
+        label=None
+        ):
+        """查询子帐户
+
+        Args:
+            parent (string): 主帐户帐号
+            label (string, 计费服务项目标签): 如果此参数不是 None ,只返回开通服务项目的帐号列表, 包括主帐号. 默认 None.
+        """
+        assert parent
+        request = counter_pb2.QuerySubAccountRequest(
+            parent=parent,
+            label=label
+        )
+        response = self._stub.QuerySubAccount(request)
+        return response.accounts

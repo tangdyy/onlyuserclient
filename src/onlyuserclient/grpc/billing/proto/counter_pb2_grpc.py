@@ -60,6 +60,11 @@ class CounterServiceStub(object):
                 request_serializer=counter__pb2.QueryAccountServiceRequest.SerializeToString,
                 response_deserializer=counter__pb2.QueryAccountServiceResponse.FromString,
                 )
+        self.QuerySubAccount = channel.unary_unary(
+                '/counter.CounterService/QuerySubAccount',
+                request_serializer=counter__pb2.QuerySubAccountRequest.SerializeToString,
+                response_deserializer=counter__pb2.QuerySubAccountResponse.FromString,
+                )
 
 
 class CounterServiceServicer(object):
@@ -129,6 +134,13 @@ class CounterServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def QuerySubAccount(self, request, context):
+        """查询子帐户
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_CounterServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -176,6 +188,11 @@ def add_CounterServiceServicer_to_server(servicer, server):
                     servicer.QueryAccountService,
                     request_deserializer=counter__pb2.QueryAccountServiceRequest.FromString,
                     response_serializer=counter__pb2.QueryAccountServiceResponse.SerializeToString,
+            ),
+            'QuerySubAccount': grpc.unary_unary_rpc_method_handler(
+                    servicer.QuerySubAccount,
+                    request_deserializer=counter__pb2.QuerySubAccountRequest.FromString,
+                    response_serializer=counter__pb2.QuerySubAccountResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -338,5 +355,22 @@ class CounterService(object):
         return grpc.experimental.unary_unary(request, target, '/counter.CounterService/QueryAccountService',
             counter__pb2.QueryAccountServiceRequest.SerializeToString,
             counter__pb2.QueryAccountServiceResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def QuerySubAccount(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/counter.CounterService/QuerySubAccount',
+            counter__pb2.QuerySubAccountRequest.SerializeToString,
+            counter__pb2.QuerySubAccountResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
