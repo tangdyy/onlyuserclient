@@ -76,6 +76,9 @@ CdrViewSet(viewsets.ViewSet):
             accnos = client.query_subaccounts(parent, label)
             if len(accnos) > 0:
                 accno = accnos[0]
+            else:
+                # 如果没有查询到帐号，应当作异常处理
+                pass
 
             client.end_service(
                 # 取上面返回计费帐号
