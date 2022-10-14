@@ -67,17 +67,25 @@ CdrViewSet(viewsets.ViewSet):
         
         #下面计费处理
         # 根据话单中 organization_id 查询计费帐号。这里建议用django database cache 缓存计费帐号，可以大幅减少重复调用，但要控制好TTL，减少计费帐号绑定修改后计费错误，建议60秒。
-        accno = get_organization_billaccount(organization_id)
+        parent = get_organization_billaccount(organization_id)
         
         client = CounterClient(BILL_GRPC_ADDR)
 
         try:
+            # 取得开通服务项目的主帐户或子帐户帐号。建议进行缓存处理
+            accnos = client.query_subaccounts(parent, label)
+            if len(accnos) > 0:
+                accno = accnos[0]
+
             client.end_service(
                 # 取上面返回计费帐号
                 accno, 
                 # 从settings.py中取得回拨计费项目标签, 详见readme.md 1.3 
                 label, 
                 # 取话单中uuid字段, 如果没有可以用objectid生成
+                # pip install django_objectid
+                # from objectid import create_objectid
+                # providerno = create_objectid()
                 providerno, 
                 # 取话单中应答时间
                 start_time, 

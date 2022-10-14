@@ -518,6 +518,21 @@ GET resources/choices
 * `usage`   
 * `limits`   
 
+#### `CounterClient.query_subaccounts(parent, label=None):` 
+    计费子帐户查询。    
+    如果 label 是 None, 返回结果是主帐户下全部子帐户帐号列表。
+    如果 label 不是 None, 返回结果是开通服务项目的 主帐户及子帐户 帐号列表。
+
+
+参数：
+* `parent`    
+    主帐户帐号。
+* `label`   
+    服务项目标签。    
+
+返回值：   
+* 帐号列表, `list` 类型   
+
 使用 gRPC 接口实现服务功能按次计费示例代码：    
 ```python
 from onlyuserclient.grpc.billing import counter
