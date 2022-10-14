@@ -291,7 +291,10 @@ class BillApiHandler():
             request,
             'summary',
             self.get_summary(request, response)
-        )    
+        )  
+        if not self.after:
+            return   
+            
         self.finish_service(request, response)
 
 
