@@ -131,7 +131,13 @@ class BillApiHandler():
         org_id = self._get_current_org_id(request)
         if org_id is None:
             return None
-        return onlyuserapi.get_organization_billaccount(org_id)
+        parent = onlyuserapi.get_organization_billaccount(org_id)
+        if parent is None:
+            return None
+        subaccounts = billingapi.query_subaccounts(parent, self.service_label)
+        if len(subaccounts) == 0:
+            return None
+        return subaccounts[0]
 
     def get_accno_by_user(self, request):
         '''获取用户的计费账号
