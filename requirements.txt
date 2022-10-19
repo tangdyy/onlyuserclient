@@ -3,4 +3,4 @@ djangorestframework==3.12.4
 simple-rest-client==1.1.1
 django-objectid==1.0.0
 uwsgi==2.0.19
-grpcio==1.44.0
+grpcio==1.49.1
