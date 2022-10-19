@@ -60,7 +60,8 @@ class BillAccountResource(Resource):
         "finished_service": {'method': 'POST', 'url': '/api/billaccounts/{}/finished-service/'},
         "increase_resource": {'method': 'POST', 'url': '/api/billaccounts/{}/increase-resource/'},
         "reduce_resource": {'method': 'POST', 'url': '/api/billaccounts/{}/reduce-resource/'},    
-        "usable_service": {'method': 'POST', 'url': '/api/billaccounts/{}/usable-service/'},     
+        "usable_service": {'method': 'POST', 'url': '/api/billaccounts/{}/usable-service/'}, 
+        "query_subaccounts": {'method': 'GET', 'url': '/api/billaccounts/{}/query-subaccounts/'}    
     }
 
 
@@ -242,6 +243,31 @@ class BillingApi(BaseAPI):
             raise BillingFail(e)
         return usable  
 
+    def query_subaccounts(self, parent, label=None):
+        '''查询子帐户
+        '''
+        accounts = []
+        ckey = functions.generate_cache_key(
+            'BAPIQSA',
+            parent
+        )
+        if CACHE_API:
+            accounts = dbcache.get(ckey)
+            if accounts is not None:
+                return accounts 
+        
+        try:
+            params = {}
+            if label:
+                params['label'] = label
+            response = self.accounts.query_subaccounts(parent, params=params)
+            accounts = response.body.get('accounts', [])
+        except exceptions.ClientError as e:
+            raise BillingFail(e)
+            
+        if CACHE_API and accounts:
+            dbcache.set(ckey, accounts, CACHE_TTL)
+        return accounts   
  
         
 # 计费服务接口对象

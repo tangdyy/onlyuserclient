@@ -170,15 +170,15 @@ ONLYUSERCLIENT = {
 
 BILLINGCLIENT = {
     # 计费服务器Restful接口URL
-    'API_ROOT_URL': 'https://billing-dev.cdqidian.net',
+    'API_ROOT_URL': 'http://127.0.0.1:8001',
     # API URL前缀
     'API_PFX': None,
     # 计费服务器Restful接口超时(秒)
     'API_TIMEOUT': 5,
     # KEY-AUTH key
-    'APIKEY': 'b7Goa8W1kGJBxG8Cbhz5SckM3xl9gdbZ',
+    'APIKEY': None,
     # 缓存远程接口
-    'CACHE_API': True,
+    'CACHE_API': False,
     # 缓存存活时间(秒)
     'CACHE_TTL': 60,
     # 属于应用服务
