@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages 
 
+
 with open("readme.md", "r", encoding='utf8') as fh:
     long_description = fh.read()
 
 setup(
     name = 'onlyuserclient',
-    version = '1.2.4',
+    version = '1.2.5',
     description = 'onlyuser client',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -16,8 +17,8 @@ setup(
         'django', 
         'djangorestframework', 
         "simple-rest-client==1.1.1", 
-        'django-objectid',
-        'grpcio'
+        'django-objectid>=1.0.6',
+        'grpcio==1.49.1'
     ],
     package_dir={'': 'src'},
     packages=find_packages('src'),
