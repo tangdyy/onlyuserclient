@@ -37,6 +37,7 @@ class OrganizationResource(Resource):
     actions = {
         "retrieve":{'method': 'GET', 'url': '/organizations/{}/'},
         "billaccount":{'method': 'GET', 'url': '/organization-trees/{}/billaccount/'}, 
+        "bindorganizations":{'method': 'GET', 'url': '/organization-trees/querybill/'}, 
     }
 
 class ApplicationResource(Resource):
@@ -142,6 +143,24 @@ class OnlyuserApi(BaseAPI):
             accno = None
             pass
         return accno
+
+    def query_bindorganizations(self, accno):
+        '''查询计费帐号绑定组织
+        '''
+        logger.debug(
+            'Call onlyuser api bindorganizations by accno,'
+            'accno:{}.'.format(accno)
+        )
+        if api_settings.LOCAL:
+            logger.warning('Onlyuser api is local mode.')
+            return []
+        data = []
+        try:
+            response = self.organizations.bindorganizations(params={'accno': accno})
+            data = response.body
+        except:
+            pass
+        return data                              
 
     def get_application_info(self, application_id):
         '''查询应用程序信息
