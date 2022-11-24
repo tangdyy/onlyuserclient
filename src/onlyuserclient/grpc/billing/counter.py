@@ -1,5 +1,6 @@
 import json
 import grpc
+import atexit
 from onlyuserclient.grpc.billing.proto import counter_pb2
 from onlyuserclient.grpc.billing.proto import counter_pb2_grpc
 
@@ -59,6 +60,11 @@ class CounterClient():
             
         self._channel = grpc.insecure_channel(self._server_addr, options=options)
         self._stub = counter_pb2_grpc.CounterServiceStub(self._channel)
+        atexit.register(self.close)
+
+    def close(self):
+        print('exit and close')
+        self._channel.stop()
 
     def create_account(
         self, 
