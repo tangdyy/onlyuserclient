@@ -358,14 +358,14 @@ GET resources/choices
 #### `CounterClient` 对象
   `CounterClient` 对象提供服务程序与计费系统通信的接口方法。
 
-#### `class CounterClient(server=None,max_reconnect=0, reconnect_interval=5)`
+#### `class CounterClient(server=None, max_retres=None, max_backoff=None, dns_timeout=None)`
 参数：
 * `server`    
-    计费系统 grpc 服务器地址，默认 `localhost:50080`。
-* `max_reconnect`    
-    最大掉线重连次数，默认 0。
-* `reconnect_interval`   
-    掉线重连时间间隔，默认5秒。 
+    计费系统 grpc 服务器地址，默认 `localhost:50051`。
+* `max_retres`    
+    最大重连次数 2-5， 0 不重连，默认 5。
+* `max_backoff`   
+    最长退出时间，默认5秒，格式 '5s'。 
 
 #### `CounterClient.create_account(owner, kind, name)`
     创建计费帐户。此方法通常由`onlyuser`调用。

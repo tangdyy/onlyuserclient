@@ -1,14 +1,16 @@
-import time
+import json
 import grpc
 from onlyuserclient.grpc.billing.proto import counter_pb2
 from onlyuserclient.grpc.billing.proto import counter_pb2_grpc
 
 # 默认计费服务器 gRPC 地址
-DEFAULT_GRPC_ADDRESS = 'localhost:50080'
+DEFAULT_GRPC_ADDRESS = 'localhost:50051'
 # 默认服务器最大重连次数
-DEFAULT_MAX_RECONNECT = 0
-# 默认重连间隔时间(秒)
-DEFAULT_RECONNECT_INTERVAL = 5
+DEFAULT_MAX_RETRES = 5
+# 默认最长退出时间
+DEFAULT_MAX_BACKOFF = '5s'
+# 域名解析超时(ms)
+DEFAULT_DNS_TIMEOUT = 5000
 
 # 个人帐户
 ACCOUNT_KIND_PERSONAL = counter_pb2.CreateAccountRequest.PS
@@ -22,19 +24,41 @@ class CounterClient():
     def __init__(
         self, 
         server=None,
-        max_reconnect=DEFAULT_MAX_RECONNECT, 
-        reconnect_interval=DEFAULT_RECONNECT_INTERVAL
+        max_retres=None, 
+        max_backoff=None
         ):
         """计费应用程序 gRPC 客户端 
 
         Args:
             server (string, optional): 计费服务器 gRPC 地址. 默认 :50080.
-            max_reconnect (int, optional): 最大重连次数. 默认 0.
-            reconnect_interval (int, optional): 重连间隔时间(秒). 默认 5.
+            max_retres (int, optional): 最大重连次数 2-5, 0 不重连. 默认 0.
+            max_backoff (string, optional): 最长退出时间. 默认 5s.
         """
         self._server_addr = server or DEFAULT_GRPC_ADDRESS
-        self._max_reconnect = max_reconnect
-        self._reconnect_interval = reconnect_interval
+        self._max_retres = max_retres or DEFAULT_MAX_RETRES
+        self._max_backoff = max_backoff or DEFAULT_MAX_BACKOFF
+        options = []
+        if self._max_retres > 0:
+            options.append(("grpc.enable_retries", 1))                    
+            service_config_json = json.dumps({
+                "methodConfig": [{
+                    # To apply retry to all methods, put [{}] in the "name" field
+                    "name": [{}],
+                    "retryPolicy": {
+                        "maxAttempts": self._max_retres,
+                        "initialBackoff": "0.1s",
+                        "maxBackoff": self._max_backoff,
+                        "backoffMultiplier": 2,
+                        "retryableStatusCodes": ["UNAVAILABLE"],
+                    },
+                }]
+            })
+            options.append(("grpc.service_config", service_config_json))
+        else:
+            options.append(("grpc.enable_retries", 0)) 
+            
+        self._channel = grpc.insecure_channel(self._server_addr, options=options)
+        self._stub = counter_pb2_grpc.CounterServiceStub(self._channel)
 
     def create_account(
         self, 
@@ -55,12 +79,7 @@ class CounterClient():
             kind=kind,
             name=name
         )
-        res = None
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.CreateAccount(request)
-            channel.close()
-        return res
+        return self._stub.CreateAccount(request)
 
     def query_account(
         self, 
@@ -81,12 +100,7 @@ class CounterClient():
             applicationid=applicationid,
             organizationid=organizationid
         )
-        res = None
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.QueryAccount(request)
-            channel.close()
-        return res
+        return self._stub.QueryAccount(request)
 
     def usable_service(
         self, 
@@ -107,13 +121,8 @@ class CounterClient():
             label=label,
             count=count
         ) 
-        usable = False
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.UsableService(request)     
-            usable = res.usable
-            channel.close()
-        return usable
+        res = self._stub.UsableService(request)     
+        return res.usable
 
     def start_service(
         self, 
@@ -155,12 +164,7 @@ class CounterClient():
             expire=expire.isoformat() if expire else None,
             usable=usable           
         )
-        res = None
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.StartService(request)
-            channel.close()
-        return res
+        return self._stub.StartService(request)
 
     def end_service(
         self, 
@@ -202,13 +206,8 @@ class CounterClient():
             application=application,
             organization=organization
         )
-        res = None
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.EndService(request)
-            channel.close()
-        return res
-    
+        return self._stub.EndService(request)
+
     def increase_resource(
         self,
         accno,
@@ -231,12 +230,7 @@ class CounterClient():
             count=count,
             total=total
         )
-        res = None
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.IncreaseResource(request)
-            channel.close()
-        return res
+        self._stub.IncreaseResource(request)
         
     def reduce_resource(
         self,
@@ -260,12 +254,7 @@ class CounterClient():
             count=count,
             total=total
         )
-        res = None
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.ReduceResource(request)
-            channel.close()
-        return res
+        self._stub.ReduceResource(request)
         
     def keep_service(
         self,
@@ -289,12 +278,7 @@ class CounterClient():
             providerno=providerno,
             expire=expire.isoformat() if expire else None
         )
-        res = None
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)
-            res = stub.KeepService(request)
-            channel.close()
-        return res
+        self._stub.KeepService(request)
     
     def query_account_service(
         self,
@@ -312,14 +296,9 @@ class CounterClient():
             accno=accno,
             label=label            
         ) 
-        code = -1
-        detail = ''
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)       
-            res = stub.QueryAccountService(request)
-            code = res.code
-            detail = res.detail
-            channel.close()
+        res = self._stub.QueryAccountService(request)
+        code = res.code or -1
+        detail = res.detail or ''
         return code, detail
     
     def query_subaccounts(
@@ -338,10 +317,5 @@ class CounterClient():
             parent=parent,
             label=label
         )
-        accounts = []
-        with grpc.insecure_channel(self._server_addr) as channel:
-            stub = counter_pb2_grpc.CounterServiceStub(channel)   
-            response = stub.QuerySubAccount(request)
-            accounts = response.accounts
-            channel.close()
-        return accounts
+        response = self._stub.QuerySubAccount(request)
+        return response.accounts or []
