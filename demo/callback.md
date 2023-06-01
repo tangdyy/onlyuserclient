@@ -59,6 +59,8 @@ from onlyuserclient.grpc.billing.counter import CounterClient
 
 # 计费gRPC服务地址， 建议在setting.py中添加环境变量配置项，方便修改。
 BILL_GRPC_ADDR = 'grpc.billing:50080'
+# 计费gRPC客户端
+client = CounterClient(BILL_GRPC_ADDR)
 
 # 假设类名
 CdrViewSet(viewsets.ViewSet):
@@ -68,8 +70,7 @@ CdrViewSet(viewsets.ViewSet):
         #下面计费处理
         # 根据话单中 organization_id 查询计费帐号。这里建议用django database cache 缓存计费帐号，可以大幅减少重复调用，但要控制好TTL，减少计费帐号绑定修改后计费错误，建议60秒。
         parent = get_organization_billaccount(organization_id)
-        
-        client = CounterClient(BILL_GRPC_ADDR)
+  
 
         try:
             # 取得开通服务项目的主帐户或子帐户帐号。建议进行缓存处理
