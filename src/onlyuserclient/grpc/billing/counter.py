@@ -63,7 +63,6 @@ class CounterClient():
         atexit.register(self.close)
 
     def close(self):
-        print('exit and close')
         self._channel.stop()
 
     def create_account(
