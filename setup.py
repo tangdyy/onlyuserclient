@@ -16,9 +16,9 @@ setup(
     install_requires=[
         'django', 
         'djangorestframework', 
-        "simple-rest-client==1.1.1", 
+        "simple-rest-client>=1.1.1", 
         'django-objectid>=1.0.6',
-        'grpcio==1.49.1'
+        'grpcio>=1.49.1'
     ],
     package_dir={'': 'src'},
     packages=find_packages('src'),
