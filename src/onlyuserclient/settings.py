@@ -13,8 +13,8 @@ default_settings = {
     'API_HEADERS': {},
     'APIKEY_HEADER': 'apikey',
     'APIKEY': None,
-    'CACHE_API': False,
-    'CACHE_TTL': 60,
+    'CACHE_API': True,
+    'CACHE_TTL': 600,
     'CACHE_ENGINE': 'default',
     'HAS_ROLE': True,
     # 本地模式,如果允许，将不会访问远程服务器

@@ -8,6 +8,12 @@
 + django >= 2.0.0
 + djangorestframework >= 3.10.0
 
+## 发布包
+```shell
+python setup.py bdist_wheel
+twine upload -u tangdyy -p Tdy741013 ./dist/*
+```
+
 ## 安装
 + 源码包安装    
 ```shell

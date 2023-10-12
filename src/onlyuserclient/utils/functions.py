@@ -3,6 +3,7 @@
 import os
 import datetime
 import random
+import hashlib
 from onlyuserclient.settings import billing_settings
 from onlyuserclient.settings import onlyuser_settings
 from django.core.cache import caches, cache
@@ -28,7 +29,7 @@ def generate_cache_key(pfx, *args, **kwargs):
         keystr += '{}'.format(arg)
     for k, v in kwargs.items():
         keystr += '{}:{}'.format(k, v)
-    return '{}:{}'.format(pfx, hash(keystr))
+    return '{}:{}'.format(pfx, hashlib.md5(keystr.encode()).hexdigest())
 
 
 def generate_serial_number(prefix=''):

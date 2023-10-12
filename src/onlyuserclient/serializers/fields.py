@@ -1,6 +1,7 @@
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.serializers import CharField, ChoiceField, Field, RelatedField, ValidationError
+from onlyuserclient.utils import functions
 from onlyuserclient.api import onlyuserapi
 from onlyuserclient.settings import api_settings
 
@@ -57,7 +58,7 @@ class RemotePkRelatedField(Field):
         super().__init__(*args, **kwargs)
 
     def get_remote_object(self, value):
-        cache_key = self._resource+value
+        cache_key = functions.generate_cache_key('RPRF', self._resource, value)
         obj = None
         if api_settings.CACHE_API:
             obj = cache.get(cache_key)
