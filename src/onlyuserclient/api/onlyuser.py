@@ -6,7 +6,7 @@ from onlyuserclient.utils import functions
 from .base import BaseAPI
 from onlyuserclient.settings import api_settings, onlyuser_settings
 
-__all__ =('onlyuserapi',)
+__all__ =('onlyuserapi', 'get_onlyuserapi')
 
 logger = logging.getLogger('onlyuserclient.api.onlyuser')
 CACHE_API  = onlyuser_settings.CACHE_API
@@ -277,3 +277,14 @@ onlyuserapi = OnlyuserApi(
     apikey_header=onlyuser_settings.APIKEY_HEADER,
     apikey=onlyuser_settings.APIKEY   
 )
+
+
+def get_onlyuserapi():
+    return OnlyuserApi(
+        api_root_url=onlyuser_settings.API_ROOT_URL,
+        pfx=onlyuser_settings.ONLYUSER_PFX,
+        headers=onlyuser_settings.API_HEADERS,
+        timeout=onlyuser_settings.API_TIMEOUT,
+        apikey_header=onlyuser_settings.APIKEY_HEADER,
+        apikey=onlyuser_settings.APIKEY   
+    )

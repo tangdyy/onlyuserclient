@@ -2,7 +2,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.serializers import CharField, ChoiceField, Field, RelatedField, ValidationError
 from onlyuserclient.utils import functions
-from onlyuserclient.api import onlyuserapi
+from onlyuserclient.api import get_onlyuserapi
 from onlyuserclient.settings import api_settings
 
 __all__ = (
@@ -64,7 +64,7 @@ class RemotePkRelatedField(Field):
             obj = cache.get(cache_key)
         if obj:
             return obj
-
+        onlyuserapi = get_onlyuserapi()
         api = getattr(self, 'remote_api', onlyuserapi)
         res = getattr(api, self._resource, None)
         if res is None:
