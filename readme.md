@@ -343,6 +343,13 @@ GET resources/choices
   用户的ID          
 > 返回值：            
   用户的详细信息，`dict` 或 `None`。               
+#### 6. `onlyuserclient.get_organization_users(organization_id)`
+查询组织树用户列表     
+> 参数：    
+  * `organization_id`    
+  组织机构的ID          
+> 返回值：            
+  用户列表，`list` 或 `None`。 
 
 ### `onlyuserclient.api.billingapi` 实例对象
 `billingapi` 是 `simple_rest_client.api.API` 的实例对象，将一系列 wellbill api 接口封装为实例方法。             

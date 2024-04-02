@@ -37,6 +37,7 @@ class OrganizationResource(Resource):
     actions = {
         "retrieve":{'method': 'GET', 'url': '/organizations/{}/'},
         "billaccount":{'method': 'GET', 'url': '/organization-trees/{}/billaccount/'}, 
+        "users":{'method': 'GET', 'url': '/organization-trees/{}/users/'}, 
         "bindorganizations":{'method': 'GET', 'url': '/organization-trees/querybill/'}, 
     }
 
@@ -143,6 +144,34 @@ class OnlyuserApi(BaseAPI):
             accno = None
             pass
         return accno
+    
+    def get_organization_users(self, organization_id):
+        '''查询组织树用户列表
+        '''
+        logger.debug(
+            'Call onlyuser api organization tree users'
+            'organization:{}.'.format(organization_id )
+        )
+        if api_settings.LOCAL:
+            logger.warning('Onlyuser api is local mode.')
+            return '0'        
+        ckey = functions.generate_cache_key(
+            'BAPIOB', 
+            'organization_users', 
+            organization_id
+        )
+        if CACHE_API:
+            result = cache.get(ckey)
+            if result:
+                return result 
+
+        try:
+            response = self.organizations.users(organization_id)
+            data = response.body
+        except:
+            data = None
+            pass
+        return data
 
     def query_bindorganizations(self, accno):
         '''查询计费帐号绑定组织
