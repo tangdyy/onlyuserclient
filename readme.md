@@ -11,7 +11,7 @@
 ## 发布包
 ```shell
 python setup.py bdist_wheel
-twine upload -u tangdyy -p Tdy741013 ./dist/*
+twine upload -u __token__ -p ****** ./dist/*
 ```
 
 ## 安装
