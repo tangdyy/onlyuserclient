@@ -315,37 +315,46 @@ GET resources/choices
 >返回值：            
   `(code, detail)`   
   `code` 数值类型，是 0 表示可以使用，其他值不允许使用；`detail` 字符串，结果的详细说明。                   
-#### 2. `onlyuserclient.get_organization_billaccount(organization_id)`
+#### 2. ``onlyuserapi.get_organization_billaccount(organization_id)`
 计费相关接口方法，查询组织绑定的计费账号     
 > 参数：    
   * `organization_id`    
   组织机构的ID          
 > 返回值：            
   计费账号，字符串 或 `None`。                   
-#### 3. `onlyuserclient.get_application_info(application_id)`           
+#### 3. ``onlyuserapi.get_application_info(application_id)`           
 查询应用程序的详细信息             
 > 参数：    
   * `application_id`    
   应用程序的ID          
 > 返回值：            
   应用程序信息详细信息，`dict` 或 `None`。                  
-#### 4. `onlyuserclient.get_organization_info(organization_id)`           
+#### 4. ``onlyuserapi.get_organization_info(organization_id)`           
 查询组织的详细信息             
 > 参数：    
   * `organization_id`    
   组织的ID          
 > 返回值：            
   组织的详细信息，`dict` 或 `None`。              
-#### 5. `onlyuserclient.get_user_info(user_id)`            
+#### 5. ``onlyuserapi.get_user_info(user_id)`            
 查询用户的详细信息             
 > 参数：    
   * `user_id`    
   用户的ID          
 > 返回值：            
   用户的详细信息，`dict` 或 `None`。               
-#### 6. `onlyuserclient.get_organization_users(organization_id)`
+#### 6. ``onlyuserapi.get_organization_users(organization_id)`
 查询组织树用户列表     
 > 参数：    
+  * `organization_id`    
+  组织机构的ID          
+> 返回值：            
+  用户列表，`list` 或 `None`。 
+#### 7. ``onlyuserapi.query_user_organizationmembers(user_id, organization_id)`
+查询用户所在组织的成员    
+> 参数：  
+  * `user_id`    
+  用户ID     
   * `organization_id`    
   组织机构的ID          
 > 返回值：            
