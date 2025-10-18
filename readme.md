@@ -372,7 +372,14 @@ GET resources/choices
   计费账号，字符串。
 >异常：
   计费账号不存在时，产生异常：`onlyuserclient.api.billing.BillAccountNotExist`。
+#### 2. `billingapi.get_accno_from_organization(organizationid)`
+查询组织绑定的计费账号。
 
+>参数：     
+  * `organization_id`    
+  组织机构的ID          
+>返回值：            
+  计费账号，字符串。
 ### `onlyuserclient.grpc.billing.counter`模块
   ***1.2.0 增加***   
   服务程序计费 gRpc 接口。

@@ -61,7 +61,8 @@ class BillAccountResource(Resource):
         "increase_resource": {'method': 'POST', 'url': '/api/billaccounts/{}/increase-resource/'},
         "reduce_resource": {'method': 'POST', 'url': '/api/billaccounts/{}/reduce-resource/'},    
         "usable_service": {'method': 'POST', 'url': '/api/billaccounts/{}/usable-service/'}, 
-        "query_subaccounts": {'method': 'GET', 'url': '/api/billaccounts/{}/query-subaccounts/'}    
+        "query_subaccounts": {'method': 'GET', 'url': '/api/billaccounts/{}/query-subaccounts/'},    
+        "get_accno_from_organization": {'method': 'GET', 'url': '/api/billaccounts/from-organization/'}  
     }
 
 
@@ -268,7 +269,33 @@ class BillingApi(BaseAPI):
         if CACHE_API and accounts:
             dbcache.set(ckey, accounts, CACHE_TTL)
         return accounts   
- 
+
+    def get_accno_from_organization(self, organization_id):
+        '''查询组织绑定计费账号
+        '''
+        ckey = functions.generate_cache_key(
+            'BAPIGAFO', 
+            'organization_billaccount', 
+            organization_id
+        )
+        if CACHE_API:
+            result = dbcache.get(ckey)
+            if result:
+                return result 
+
+        try:
+            params = {
+                'organization_id': organization_id
+            }
+            response = self.accounts.get_accno_from_organization(params=params)
+            accno = response.body.get('accno', None)
+            if accno and CACHE_API:
+                dbcache.set(ckey, accno, CACHE_TTL)
+        except:
+            accno = None
+            pass
+        return accno
+
         
 # 计费服务接口对象
 billingapi = BillingApi(
