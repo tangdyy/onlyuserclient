@@ -1,9 +1,12 @@
+from urllib.parse import urljoin
+import requests
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.serializers import CharField, ChoiceField, Field, RelatedField, ValidationError
 from onlyuserclient.utils import functions
 from onlyuserclient.api import get_onlyuserapi
 from onlyuserclient.settings import api_settings
+
 
 __all__ = (
     "HideCharField", 
@@ -13,6 +16,7 @@ __all__ = (
     "SummaryRelatedField", 
     "SelecterField",
     "ApplicationRelatedField",
+    "ApiRelatedField",
            
 )
 
@@ -161,3 +165,57 @@ class SelecterField(ChoiceField):
             'label': self.choices.get(value, value)
         } 
         return obj
+
+
+
+
+class ApiRelatedField(Field):
+    '''通用API关联字段
+    '''
+    def __init__(self, *args, **kwargs):
+        self._api_url = kwargs.pop('api_url', None)
+        self._method = kwargs.pop('method', 'GET').upper()
+        self._fields = kwargs.pop('fields', None)
+        self._headers = kwargs.pop('headers', {})
+        self._pos = kwargs.pop('pos', 'query')  # query, body, path
+        self._param = kwargs.pop('param', 'id')
+        self._auth = kwargs.pop('auth', None)  # base, apikey, token, none
+        super().__init__(*args, **kwargs)
+
+    def _request_api(self, value):
+        if not self._api_url:
+            raise Exception("ApiRelatedField need 'api_url' parameter.")       
+
+        url = self._api_url
+        if self._pos == 'path':
+            url = urljoin(self._api_url, str(value))
+            params = {}
+            data = {}
+        elif self._pos == 'body':
+            params = {}
+            data = {self._param: value}
+        else:  # query
+            params = {self._param: value}
+            data = {}
+        
+        if self._method == 'GET':
+            response = requests.get(url, params=params, headers=self._headers)
+        elif self._method == 'POST':
+            response = requests.post(url, params=params, data=data, headers=self._headers)
+        else:
+            raise Exception("ApiRelatedField only support 'GET' and 'POST' method.")
+        return response.json()
+
+
+    def to_representation(self, value):
+        if hasattr(self.root, 'many'):
+            # In a list serializer, skip processing to avoid multiple calls
+            return value
+        
+        response = self._request_api(value)
+        if response:
+            return response[0]
+        return value
+        
+    def to_internal_value(self, data):
+        return data

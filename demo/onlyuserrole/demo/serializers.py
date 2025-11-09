@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import RoleDemo
-from onlyuserclient.serializers import HideCharField, RemotePkRelatedField
+from onlyuserclient.serializers import HideCharField, RemotePkRelatedField, ApiRelatedField
 from onlyuserclient.api import onlyuserapi
 
 class DefaultDemoSerializer(serializers.ModelSerializer):
@@ -39,3 +39,17 @@ class ReadlyMobileDemoSerializer(serializers.ModelSerializer):
         model = RoleDemo
         fields = "__all__"
         read_only_fields=('mobile',)
+
+
+
+class ApiRelatedDemoSerializer(serializers.ModelSerializer):
+    '''此序列化类,部分字段是远程关联
+    '''    
+    owner = ApiRelatedField(
+        api_url='http://127.0.0.1:8000/api/v2/users/by-ids/', 
+        param='ids'
+    )
+    class Meta:
+        model = RoleDemo
+        fields = "__all__"
+        read_only_fields = []

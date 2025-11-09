@@ -84,7 +84,7 @@ DATABASES = {
         'OPTIONS': {
             'host':'127.0.0.1',
             'user':'root',
-            'passwd':'Tdy-123456',
+            'passwd':'tt@23865',
             'db':'onlyuserclientdemo',
             'charset':'utf8mb4',
             'init_command': 'SET default_storage_engine=INNODB',
