@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import RoleDemo
-from onlyuserclient.serializers import HideCharField, RemotePkRelatedField, ApiRelatedField
+from onlyuserclient.serializers import HideCharField, RemotePkRelatedField, ApiRelatedField, ApiRelatedListSerializer
 from onlyuserclient.api import onlyuserapi
 
 class DefaultDemoSerializer(serializers.ModelSerializer):
@@ -53,3 +53,4 @@ class ApiRelatedDemoSerializer(serializers.ModelSerializer):
         model = RoleDemo
         fields = "__all__"
         read_only_fields = []
+        list_serializer_class = ApiRelatedListSerializer

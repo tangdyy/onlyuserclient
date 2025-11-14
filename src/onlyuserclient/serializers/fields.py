@@ -1,11 +1,13 @@
 from urllib.parse import urljoin
 import requests
+from requests.auth import HTTPBasicAuth
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.serializers import CharField, ChoiceField, Field, RelatedField, ValidationError
 from onlyuserclient.utils import functions
 from onlyuserclient.api import get_onlyuserapi
 from onlyuserclient.settings import api_settings
+from .serializers import ApiRelatedListSerializer
 
 
 __all__ = (
@@ -176,11 +178,26 @@ class ApiRelatedField(Field):
         self._api_url = kwargs.pop('api_url', None)
         self._method = kwargs.pop('method', 'GET').upper()
         self._fields = kwargs.pop('fields', None)
+        self._objects = kwargs.pop('objects', None) 
         self._headers = kwargs.pop('headers', {})
         self._pos = kwargs.pop('pos', 'query')  # query, body, path
         self._param = kwargs.pop('param', 'id')
         self._auth = kwargs.pop('auth', None)  # base, apikey, token, none
+        self._username = kwargs.pop('username', None)
+        self._password = kwargs.pop('password', None)
+        self._apikey = kwargs.pop('apikey', None)
+        self._token = kwargs.pop('token', None)
         super().__init__(*args, **kwargs)
+
+    def _get_headers(self):
+        headers = self._headers.copy()
+        if self._auth == 'base':
+            return headers
+        elif self._auth == 'apikey':
+            headers['X-API-KEY'] = self._apikey
+        elif self._auth == 'token':
+            headers['Authorization'] = 'Bearer %s'%(self._token,)
+        return headers
 
     def _request_api(self, value):
         if not self._api_url:
@@ -188,7 +205,12 @@ class ApiRelatedField(Field):
 
         url = self._api_url
         if self._pos == 'path':
-            url = urljoin(self._api_url, str(value))
+            if isinstance(value, list):  # path
+                p = ','.join([str(val) for val in value])
+            else:
+                p = str(value)
+
+            url = urljoin(self._api_url, p)
             params = {}
             data = {}
         elif self._pos == 'body':
@@ -198,23 +220,43 @@ class ApiRelatedField(Field):
             params = {self._param: value}
             data = {}
         
+        if self._auth == 'base':
+            auth = HTTPBasicAuth(self._username, self._password)
+        else:
+            auth = None
+
         if self._method == 'GET':
-            response = requests.get(url, params=params, headers=self._headers)
+            response = requests.get(url, params=params, headers=self._get_headers(), auth=auth)
         elif self._method == 'POST':
-            response = requests.post(url, params=params, data=data, headers=self._headers)
+            response = requests.post(url, params=params, data=data, headers=self._get_headers(), auth=auth)
         else:
             raise Exception("ApiRelatedField only support 'GET' and 'POST' method.")
         return response.json()
 
+    def _get_related_objects(self, value):
+        datas = self._request_api(value)
+        if self._objects:
+            for key in self._objects.split('.'):
+                datas = datas[key]
+        
+        if self._fields:
+            results = []
+            for data in datas:
+                obj = {}
+                for field in self._fields:
+                    obj[field] = data.get(field, None)
+                results.append(obj)
+            return results                    
+        return datas
 
     def to_representation(self, value):
-        if hasattr(self.root, 'many'):
+        if hasattr(self.root, 'many') and isinstance(self.root, ApiRelatedListSerializer):
             # In a list serializer, skip processing to avoid multiple calls
             return value
         
-        response = self._request_api(value)
-        if response:
-            return response[0]
+        objects = self._get_related_objects(value)
+        if objects:
+            return objects[0]
         return value
         
     def to_internal_value(self, data):
