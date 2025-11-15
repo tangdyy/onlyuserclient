@@ -46,8 +46,10 @@ class ApiRelatedDemoSerializer(serializers.ModelSerializer):
     '''此序列化类,部分字段是远程关联
     '''    
     owner = ApiRelatedField(
-        api_url='http://127.0.0.1:8000/api/v2/users/by-ids/', 
-        param='ids'
+        api_url='http://127.0.0.1:8000/api/v2/users/', 
+        param='id__in',
+        fields=['id', 'username', 'nickname'],
+        objects='results',
     )
     class Meta:
         model = RoleDemo

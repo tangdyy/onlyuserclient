@@ -8,6 +8,8 @@ __all__ = [
 
 class ApiRelatedListSerializer(ListSerializer):
     """Api related list serializer
+
+    Cooperate with 'ApiRelatedField' to reduce API access times.
     """
     def to_representation(self, data):
         datas = super().to_representation(data)

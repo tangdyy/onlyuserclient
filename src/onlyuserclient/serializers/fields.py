@@ -172,7 +172,40 @@ class SelecterField(ChoiceField):
 
 
 class ApiRelatedField(Field):
-    '''通用API关联字段
+    '''Remot API associated field
+
+    When serializing a list object, it should be paired with 'ApiRelatedListSequencer' to 
+    reduce the number of API accesses.
+
+    Args:
+        api_url (str): API URL.
+        param (str): associated id param name.
+        fields (list): fields to return.
+        objects (str): associated objects in API response path.
+        pos (str): param position, query, body, path.
+        auth (str): auth type, base, apikey, token, none.
+        username (str): username for basic auth.
+        password (str): password for basic auth.
+        apikey (str): apikey for apikey auth.
+        token (str): token for token auth.
+        headers (dict): request headers.
+
+    Example:
+    ```
+    class ApiRelatedDemoSerializer(serializers.ModelSerializer):
+        owner = ApiRelatedField(
+            api_url='http://127.0.0.1:8000/api/v2/users/', 
+            param='id__in',
+            fields=['id', 'username', 'nickname'],
+            objects='results',
+        )
+        class Meta:
+            model = User
+            fields = "__all__"
+            read_only_fields = []
+            list_serializer_class = ApiRelatedListSerializer
+
+    ```        
     '''
     def __init__(self, *args, **kwargs):
         self._api_url = kwargs.pop('api_url', None)
