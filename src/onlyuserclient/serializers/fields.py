@@ -259,15 +259,26 @@ class ApiRelatedField(Field):
             auth = None
 
         if self._method == 'GET':
-            response = requests.get(url, params=params, headers=self._get_headers(), auth=auth)
+            try:
+                response = requests.get(url, params=params, headers=self._get_headers(), auth=auth, timeout=(1, 5))
+            except:
+                response = None
         elif self._method == 'POST':
-            response = requests.post(url, params=params, data=data, headers=self._get_headers(), auth=auth)
+            try:
+                response = requests.post(url, params=params, data=data, headers=self._get_headers(), auth=auth, timeout=(1, 5))
+            except:  # noqa
+                response = None
         else:
             raise Exception("ApiRelatedField only support 'GET' and 'POST' method.")
-        return response.json()
+        if response and response.status_code == 200:
+            return response.json()
+        return None
 
     def _get_related_objects(self, value):
         datas = self._request_api(value)
+        if not datas:
+            return None
+        
         if self._objects:
             for key in self._objects.split('.'):
                 datas = datas[key]
