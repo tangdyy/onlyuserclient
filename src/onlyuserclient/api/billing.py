@@ -227,13 +227,15 @@ class BillingApi(BaseAPI):
         self, 
         accno, 
         label,
-        count=1
+        count=1,
+        check_quota=False
         ):
         '''请求资源使用
         '''        
         data = {
             'label': label,
-            'count': count
+            'count': count,
+            'check_quota': check_quota,
         }
         usable = False
         try:

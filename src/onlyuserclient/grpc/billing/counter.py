@@ -111,7 +111,8 @@ class CounterClient():
         self, 
         accno, 
         label, 
-        count=1
+        count=1,
+        check_quota=False
         ):
         """检查服务可用
 
@@ -124,7 +125,8 @@ class CounterClient():
         request = counter_pb2.UsableServiceRequest(
             accno=accno,
             label=label,
-            count=count
+            count=count,
+            check_quota=check_quota
         ) 
         res = self._stub.UsableService(request)     
         return res.usable
