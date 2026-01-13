@@ -1,9 +1,14 @@
+from urllib.parse import urljoin
+import requests
+from requests.auth import HTTPBasicAuth
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.serializers import CharField, ChoiceField, Field, RelatedField, ValidationError
 from onlyuserclient.utils import functions
 from onlyuserclient.api import get_onlyuserapi
 from onlyuserclient.settings import api_settings
+from .serializers import ApiRelatedListSerializer
+
 
 __all__ = (
     "HideCharField", 
@@ -13,6 +18,7 @@ __all__ = (
     "SummaryRelatedField", 
     "SelecterField",
     "ApplicationRelatedField",
+    "ApiRelatedField",
            
 )
 
@@ -161,3 +167,141 @@ class SelecterField(ChoiceField):
             'label': self.choices.get(value, value)
         } 
         return obj
+
+
+
+
+class ApiRelatedField(Field):
+    '''Remot API associated field
+
+    When serializing a list object, it should be paired with 'ApiRelatedListSequencer' to 
+    reduce the number of API accesses.
+
+    Args:
+        api_url (str): API URL.
+        param (str): associated id param name.
+        fields (list): fields to return.
+        objects (str): associated objects in API response path.
+        pos (str): param position, query, body, path.
+        auth (str): auth type, base, apikey, token, none.
+        username (str): username for basic auth.
+        password (str): password for basic auth.
+        apikey (str): apikey for apikey auth.
+        token (str): token for token auth.
+        headers (dict): request headers.
+
+    Example:
+    ```
+    class ApiRelatedDemoSerializer(serializers.ModelSerializer):
+        owner = ApiRelatedField(
+            api_url='http://127.0.0.1:8000/api/v2/users/', 
+            param='id__in',
+            fields=['id', 'username', 'nickname'],
+            objects='results',
+        )
+        class Meta:
+            model = User
+            fields = "__all__"
+            read_only_fields = []
+            list_serializer_class = ApiRelatedListSerializer
+
+    ```        
+    '''
+    def __init__(self, *args, **kwargs):
+        self._api_url = kwargs.pop('api_url', None)
+        self._method = kwargs.pop('method', 'GET').upper()
+        self._fields = kwargs.pop('fields', None)
+        self._objects = kwargs.pop('objects', None) 
+        self._headers = kwargs.pop('headers', {})
+        self._pos = kwargs.pop('pos', 'query')  # query, body, path
+        self._param = kwargs.pop('param', 'id')
+        self._auth = kwargs.pop('auth', None)  # base, apikey, token, none
+        self._username = kwargs.pop('username', None)
+        self._password = kwargs.pop('password', None)
+        self._apikey = kwargs.pop('apikey', None)
+        self._token = kwargs.pop('token', None)
+        super().__init__(*args, **kwargs)
+
+    def _get_headers(self):
+        headers = self._headers.copy()
+        if self._auth == 'base':
+            return headers
+        elif self._auth == 'apikey':
+            headers['X-API-KEY'] = self._apikey
+        elif self._auth == 'token':
+            headers['Authorization'] = 'Bearer %s'%(self._token,)
+        return headers
+
+    def _request_api(self, value):
+        if not self._api_url:
+            raise Exception("ApiRelatedField need 'api_url' parameter.")       
+
+        url = self._api_url
+        if self._pos == 'path':
+            if isinstance(value, list):  # path
+                p = ','.join([str(val) for val in value])
+            else:
+                p = str(value)
+
+            url = urljoin(self._api_url, p)
+            params = {}
+            data = {}
+        elif self._pos == 'body':
+            params = {}
+            data = {self._param: value}
+        else:  # query
+            params = {self._param: value}
+            data = {}
+        
+        if self._auth == 'base':
+            auth = HTTPBasicAuth(self._username, self._password)
+        else:
+            auth = None
+
+        if self._method == 'GET':
+            try:
+                response = requests.get(url, params=params, headers=self._get_headers(), auth=auth, timeout=(1, 5))
+            except:
+                response = None
+        elif self._method == 'POST':
+            try:
+                response = requests.post(url, params=params, data=data, headers=self._get_headers(), auth=auth, timeout=(1, 5))
+            except:  # noqa
+                response = None
+        else:
+            raise Exception("ApiRelatedField only support 'GET' and 'POST' method.")
+        if response and response.status_code == 200:
+            return response.json()
+        return None
+
+    def _get_related_objects(self, value):
+        datas = self._request_api(value)
+        if not datas:
+            return None
+        
+        if self._objects:
+            for key in self._objects.split('.'):
+                datas = datas[key]
+        
+        if self._fields:
+            results = []
+            for data in datas:
+                obj = {}
+                for field in self._fields:
+                    obj[field] = data.get(field, None)
+                results.append(obj)
+            return results                    
+        return datas
+
+    def to_representation(self, value):
+        if hasattr(self.root, 'many') and isinstance(self.root, ApiRelatedListSerializer):
+            # In a list serializer, skip processing to avoid multiple calls
+            return value
+        
+        objects = self._get_related_objects(value)
+        if objects:
+            return objects[0]
+        return value
+        
+    def to_internal_value(self, data):
+        return data

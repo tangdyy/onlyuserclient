@@ -29,6 +29,7 @@ class UserResource(Resource):
     '''
     actions = {
         "retrieve":{'method': 'GET', 'url': '/users/{}/'},
+        'organization_members': {'method': 'GET', 'url': '/users/{}/query-org-members/'},
     }
 
 class OrganizationResource(Resource):
@@ -296,6 +297,22 @@ class OnlyuserApi(BaseAPI):
         except:
             pass
         return data
+
+    def query_user_organizationmembers(self, user_id, organization_id):
+        '''查询用户据在组织成员
+        '''
+        logger.debug(
+            'Call onlyuser api query user organization members,'
+            'user:{}.'
+            'organization_id:{}.'.format(user_id, organization_id)
+        )
+        data =None
+        try:
+            response = self.users.organization_members(user_id, params={'organization_id': organization_id})
+            data = response.body
+        except:
+            pass
+        return data        
 
 
 onlyuserapi = OnlyuserApi(
