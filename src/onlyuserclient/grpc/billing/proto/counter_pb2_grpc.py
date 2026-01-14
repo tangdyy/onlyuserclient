@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from . import counter_pb2 as counter__pb2
+import counter_pb2 as counter__pb2
 
 
 class CounterServiceStub(object):

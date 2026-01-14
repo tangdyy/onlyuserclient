@@ -120,6 +120,7 @@ class CounterClient():
             accno (string): 计费帐号
             label (string): 服务项目标签
             count (int, optional): 数量. 默认值 1.
+            check_quota (bool, optional): 检查配额. 默认值 False.
         """
         assert accno and label
         request = counter_pb2.UsableServiceRequest(
@@ -142,7 +143,8 @@ class CounterClient():
         application=None,
         organization=None,
         expire=None,
-        usable=False
+        usable=False,
+        check_quota=False
         ):
         """开始服务计费
 
@@ -157,6 +159,7 @@ class CounterClient():
             organization (string, optional): 组织ID. 默认值 None.
             expire (datetime, optional): 超时时间. 默认值 None.
             usable (bool, optional): 是否只检查服务可用. 默认值 False.
+            check_quota (bool, optional): 检查配额. 默认值 False.
         """    
         assert accno and label
         request = counter_pb2.StartServiceRequest(
@@ -169,7 +172,8 @@ class CounterClient():
             application=application,
             organization=organization,
             expire=expire.isoformat() if expire else None,
-            usable=usable           
+            usable=usable,
+            check_quota=check_quota           
         )
         return self._stub.StartService(request)
 
